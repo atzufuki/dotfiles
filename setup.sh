@@ -29,7 +29,7 @@ if [[ -f "$ignore_file" ]]; then
     echo "[INFO] Found .dotfilesignore, processing files..."
     cd "$HOME/.dotfiles"
     find . -mindepth 1 -maxdepth 1 | grep -vFf "$ignore_file" | while read -r item; do
-        target="$HOME/${item#./}"
+        target="/${item#./}"
         if $delete_symlinks; then
             if [[ -L "$target" ]]; then
                 echo "[INFO] Deleting symlink: $target"
@@ -43,7 +43,7 @@ if [[ -f "$ignore_file" ]]; then
 else
     echo "[INFO] No .dotfilesignore found, processing all files..."
     for item in "$HOME/.dotfiles/"*; do
-        target="$HOME/$(basename "$item")"
+        target="/$(basename "$item")"
         if $delete_symlinks; then
             if [[ -L "$target" ]]; then
                 echo "[INFO] Deleting symlink: $target"
@@ -73,7 +73,7 @@ else
 
     # Enter the container and run the bootstrap script
     echo "[INFO] Entering fedora-gnome container and running bootstrap script..."
-    distrobox enter fedora-gnome -- bash ./container/gnome/bootstrap.sh
+    distrobox enter fedora-gnome -- bash ./containers/gnome/bootstrap.sh
     
     echo "[INFO] Dotfiles setup complete!"
 fi
