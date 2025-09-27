@@ -1,0 +1,3 @@
+# .bashrc for GNOME container
+export GNOME_SETUP=1
+# ...add container-specific aliases, exports, and customizations here...

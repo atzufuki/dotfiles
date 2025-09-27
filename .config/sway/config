@@ -1,0 +1,8 @@
+# Sway config
+
+# Set keyboard layout to Finnish
+input * {
+    xkb_layout fi
+}
+
+# ...add other Sway configuration below...

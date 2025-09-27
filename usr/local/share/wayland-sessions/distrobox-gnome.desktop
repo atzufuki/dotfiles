@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=GNOME on Wayland (fedora-gnome distrobox)
+Comment=This session logs you into GNOME
+Exec=/usr/local/bin/distrobox-enter -n fedora-gnome -- /usr/bin/gnome-session
+Type=Application
+DesktopNames=GNOME
+X-GDM-SessionRegisters=true
