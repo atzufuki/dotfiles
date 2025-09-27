@@ -1,8 +1,19 @@
-# Sway config
+# Minimal Sway config
 
-# Set keyboard layout to Finnish
+# Set keyboard layout
 input * {
-    xkb_layout fi
+    xkb_layout us
 }
 
-# ...add other Sway configuration below...
+# Set output (screen)
+output * bg #000000 solid_color
+
+# Start a terminal (change to your preferred terminal)
+exec alacritty
+
+# Basic keybindings
+bindsym $mod+Return exec alacritty
+bindsym $mod+d exec dmenu_run
+bindsym $mod+Shift+q kill
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r restart
