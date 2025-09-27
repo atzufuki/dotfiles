@@ -28,15 +28,18 @@ ignore_file="$HOME/.dotfiles/.dotfilesignore"
 echo "[INFO] Found .dotfilesignore, processing files..."
 cd "$HOME/.dotfiles"
 find . -mindepth 1 -maxdepth 1 | sed 's|^./||' | grep -vFf "$ignore_file" | grep -v "^.dotfilesignore$" | while read -r item; do
-    target="/$item"
-    if $delete_symlinks; then
-        if [[ -L "$target" ]]; then
-            echo "[INFO] Deleting symlink: $target"
-            rm "$target"
+    # Only process regular files
+    if [[ -f "$HOME/.dotfiles/$item" ]]; then
+        target="/$item"
+        if $delete_symlinks; then
+            if [[ -L "$target" ]]; then
+                echo "[INFO] Deleting symlink: $target"
+                rm "$target"
+            fi
+        else
+            echo "[INFO] Creating symlink: $target -> $HOME/.dotfiles/$item"
+            sudo ln -sfn "$HOME/.dotfiles/$item" "$target"
         fi
-    else
-        echo "[INFO] Creating symlink: $target -> $HOME/.dotfiles/$item"
-        sudo ln -sfn "$HOME/.dotfiles/$item" "$target"
     fi
 done
 
