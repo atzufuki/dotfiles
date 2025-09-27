@@ -1,3 +1,5 @@
+set $mod Mod4
+
 include /usr/share/sway/config.d/50-rules-browser.conf
 include /usr/share/sway/config.d/50-pavucontrol.conf
 include /usr/share/sway/config.d/50-rules-policykit-agent.conf
