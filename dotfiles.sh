@@ -1,45 +1,74 @@
 #!/usr/bin/env bash
 
-delete_symlinks=false
-run_bootstrap=false
+# Dotfiles setup script
+# This script clones the dotfiles repo, manages symlinks, and sets up a Fedora GNOME container using Distrobox.
 
-if [[ "$1" == "--delete" ]]; then
+delete_symlinks=false
+
+# Check for --delete-symlinks argument
+if [[ "$1" == "--delete-symlinks" ]]; then
     delete_symlinks=true
-elif [[ "$1" == "--bootstrap" ]]; then
-    run_bootstrap=true
+    echo "[INFO] Symlinks will be deleted."
+else
+    echo "[INFO] Symlinks will be created or updated."
 fi
 
+echo "[INFO] Cloning dotfiles repository..."
 git clone "https://github.com/atzufuki/dotfiles.git" "$HOME/.dotfiles"
 
 ignore_file="$HOME/.dotfiles/.dotfilesignore"
 
+# Manage symlinks based on ignore file
 if [[ -f "$ignore_file" ]]; then
+    echo "[INFO] Found .dotfilesignore, processing files..."
     cd "$HOME/.dotfiles"
     find . -mindepth 1 -maxdepth 1 | grep -vFf "$ignore_file" | while read -r item; do
         target="$HOME/${item#./}"
         if $delete_symlinks; then
-            [[ -L "$target" ]] && rm "$target"
+            if [[ -L "$target" ]]; then
+                echo "[INFO] Deleting symlink: $target"
+                rm "$target"
+            fi
         else
+            echo "[INFO] Creating symlink: $target -> $HOME/.dotfiles/${item#./}"
             ln -sfn "$HOME/.dotfiles/${item#./}" "$target"
         fi
     done
 else
+    echo "[INFO] No .dotfilesignore found, processing all files..."
     for item in "$HOME/.dotfiles/"*; do
         target="$HOME/$(basename "$item")"
         if $delete_symlinks; then
-            [[ -L "$target" ]] && rm "$target"
+            if [[ -L "$target" ]]; then
+                echo "[INFO] Deleting symlink: $target"
+                rm "$target"
+            fi
         else
+            echo "[INFO] Creating symlink: $target -> $item"
             ln -sfn "$item" "$target"
         fi
     done
 fi
 
-if $run_bootstrap; then
-    if [[ -f "$HOME/.dotfiles/bootstrap.sh" ]]; then
-        bash "$HOME/.dotfiles/bootstrap.sh"
+# Install Distrobox if missing
+if ! command -v distrobox &> /dev/null; then
+    echo "[INFO] Distrobox not found. Installing via rpm-ostree..."
+    sudo rpm-ostree install distrobox
+    echo "[INFO] Please reboot your system, then re-run this script to complete the setup."
+else
+    echo "[INFO] Distrobox found. Setting up Fedora GNOME container..."
+    # Create Fedora container with GNOME if missing
+    if ! distrobox list | grep -q fedora-gnome; then
+        echo "[INFO] Creating fedora-gnome container..."
+        distrobox create --name fedora-gnome --init --additional-packages "systemd" --image registry.fedoraproject.org/fedora:rawhide
     else
-        echo "bootstrap.sh not found in .dotfiles"
-        exit 1
+        echo "[INFO] fedora-gnome container already exists."
     fi
-    exit 0
+
+    # Enter the container and run the bootstrap script
+    echo "[INFO] Entering fedora-gnome container and running bootstrap script..."
+    distrobox enter fedora-gnome -- bash ./container-gnome/bootstrap.sh
+    
+    echo "[INFO] Dotfiles setup complete!"
 fi
+
