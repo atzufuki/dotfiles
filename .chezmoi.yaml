@@ -1,3 +1,0 @@
-hooks:
-  apply:
-    - ./bootstrap.sh
