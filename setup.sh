@@ -44,15 +44,18 @@ done
 
 # Install Distrobox if missing
 if ! command -v distrobox &> /dev/null; then
-    echo "[INFO] Distrobox not found. Installing via rpm-ostree..."
-    sudo rpm-ostree install distrobox
-    echo "[INFO] Please reboot your system, then re-run this script to complete the setup."
-else
-    echo "[INFO] Distrobox found. Setting up Fedora GNOME container..."
+    echo "[INFO] Distrobox not found. Installing via dnf..."
+    sudo dnf install -y distrobox
+    # echo "[INFO] Distrobox not found. Installing via rpm-ostree..."
+#     sudo rpm-ostree install distrobox
+#     echo "[INFO] Please reboot your system, then re-run this script to complete the setup."
+# else
+#     echo "[INFO] Distrobox found. Setting up Fedora GNOME container..."
     # Create Fedora container with GNOME if missing
     if ! distrobox list | grep -q fedora-gnome; then
         echo "[INFO] Creating fedora-gnome container..."
-        distrobox create --name fedora-gnome --init --additional-packages "systemd" --image registry.fedoraproject.org/fedora:rawhide
+        # distrobox create --name fedora-gnome --init --additional-packages "systemd" --image registry.fedoraproject.org/fedora:rawhide
+        distrobox create --name fedora-gnome --init --additional-packages "systemd" --image registry.fedoraproject.org/fedora:latest
     else
         echo "[INFO] fedora-gnome container already exists."
     fi

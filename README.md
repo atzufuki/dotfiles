@@ -1,8 +1,8 @@
-# Minimal host setup with DE containerization for Fedora Silverblue
+# Minimal host setup with DE containerization for Fedora
 
 This dotfiles setup allows you to reserve the integrity of the immutable host system by running desktop environments via containers.
 
-Apply to fresh install of Fedora Silverblue directly with the following script:
+Apply to fresh install of Fedora directly with the following script:
 
 ```bash
 curl -sL https://raw.githubusercontent.com/atzufuki/dotfiles/main/setup.sh | bash
