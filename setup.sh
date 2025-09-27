@@ -36,7 +36,7 @@ find . -mindepth 1 -maxdepth 1 | grep -vFf "$ignore_file" | grep -v "^./.dotfile
         fi
     else
         echo "[INFO] Creating symlink: $target -> $HOME/.dotfiles/${item#./}"
-        ln -sfn "$HOME/.dotfiles/${item#./}" "$target"
+        sudo ln -sfn "$HOME/.dotfiles/${item#./}" "$target"
     fi
 done
 
