@@ -14,7 +14,13 @@ else
 fi
 
 echo "[INFO] Cloning dotfiles repository..."
-git clone "https://github.com/atzufuki/dotfiles.git" "$HOME/.dotfiles"
+if [[ -d "$HOME/.dotfiles/.git" ]]; then
+    echo "[INFO] Dotfiles repo exists. Pulling latest changes..."
+    git -C "$HOME/.dotfiles" pull
+else
+    echo "[INFO] Cloning dotfiles repository..."
+    git clone "https://github.com/atzufuki/dotfiles.git" "$HOME/.dotfiles"
+fi
 
 ignore_file="$HOME/.dotfiles/.dotfilesignore"
 
