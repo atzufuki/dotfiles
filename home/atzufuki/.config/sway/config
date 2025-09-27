@@ -1,4 +1,15 @@
-include /usr/share/sway/config.d/fedora.conf
+include /usr/share/sway/config.d/50-rules-browser.conf
+include /usr/share/sway/config.d/50-pavucontrol.conf
+include /usr/share/sway/config.d/50-rules-policykit-agent.conf
+include /usr/share/sway/config.d/60-brightness.conf
+include /usr/share/sway/config.d/60-bindings-media.conf
+include /usr/share/sway/config.d/60-bindings-screenshot.conf
+include /usr/share/sway/config.d/60-bindings-volume.conf
+include /usr/share/sway/config.d/65-mode-passthrough.conf
+include /usr/share/sway/config.d/90-bar.conf
+include /usr/share/sway/config.d/95-autostart-policykit-agent.conf
+include /usr/share/sway/config.d/95-xdg-desktop-autostart.conf
+include /usr/share/sway/config.d/95-xdg-user-dirs.conf
 
 input * {
     xkb_layout fi,us
