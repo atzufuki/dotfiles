@@ -24,59 +24,21 @@ fi
 
 ignore_file="$HOME/.dotfiles/.dotfilesignore"
 
-# Recursively manage symlinks, preserving deep nesting
-echo "[INFO] Recursively processing dotfiles for symlinking..."
+# Manage symlinks based on ignore file
+echo "[INFO] Found .dotfilesignore, processing files..."
 cd "$HOME/.dotfiles"
-if [[ -f "$ignore_file" ]]; then
-    find . -type f -o -type d | grep -vFf "$ignore_file" | while read -r item; do
-        # Skip . and ..
-        [[ "$item" == "." || "$item" == ".." ]] && continue
-        target="/${item#./}"
-        source="$HOME/.dotfiles/${item#./}"
-        # Ensure parent directory exists
-        parent_dir="$(dirname "$target")"
-        if [[ ! -d "$parent_dir" ]]; then
-            mkdir -p "$parent_dir"
+find . -mindepth 1 -maxdepth 1 | grep -vFf "$ignore_file" | grep -v "^./.dotfilesignore$" | while read -r item; do
+    target="/${item#./}"
+    if $delete_symlinks; then
+        if [[ -L "$target" ]]; then
+            echo "[INFO] Deleting symlink: $target"
+            rm "$target"
         fi
-        if $delete_symlinks; then
-            if [[ -L "$target" ]]; then
-                echo "[INFO] Deleting symlink: $target"
-                rm "$target"
-            fi
-        else
-            # Only symlink files and directories, skip if already exists and not a symlink
-            if [[ -e "$target" && ! -L "$target" ]]; then
-                echo "[WARN] $target exists and is not a symlink. Skipping."
-            else
-                echo "[INFO] Creating symlink: $target -> $source"
-                ln -sfn "$source" "$target"
-            fi
-        fi
-    done
-else
-    find . -type f -o -type d | while read -r item; do
-        [[ "$item" == "." || "$item" == ".." ]] && continue
-        target="/${item#./}"
-        source="$HOME/.dotfiles/${item#./}"
-        parent_dir="$(dirname "$target")"
-        if [[ ! -d "$parent_dir" ]]; then
-            mkdir -p "$parent_dir"
-        fi
-        if $delete_symlinks; then
-            if [[ -L "$target" ]]; then
-                echo "[INFO] Deleting symlink: $target"
-                rm "$target"
-            fi
-        else
-            if [[ -e "$target" && ! -L "$target" ]]; then
-                echo "[WARN] $target exists and is not a symlink. Skipping."
-            else
-                echo "[INFO] Creating symlink: $target -> $source"
-                ln -sfn "$source" "$target"
-            fi
-        fi
-    done
-fi
+    else
+        echo "[INFO] Creating symlink: $target -> $HOME/.dotfiles/${item#./}"
+        ln -sfn "$HOME/.dotfiles/${item#./}" "$target"
+    fi
+done
 
 # Install Distrobox if missing
 if ! command -v distrobox &> /dev/null; then
