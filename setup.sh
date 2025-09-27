@@ -73,7 +73,7 @@ else
 
     # Enter the container and run the bootstrap script
     echo "[INFO] Entering fedora-gnome container and running bootstrap script..."
-    distrobox enter fedora-gnome -- bash ./containers/gnome/bootstrap.sh
+    distrobox enter fedora-gnome -- bash ~/.dotfiles/containers/gnome/bootstrap.sh
     
     echo "[INFO] Dotfiles setup complete!"
 fi
