@@ -8,7 +8,7 @@ Apply to fresh install of Fedora Silverblue directly with the following script:
 curl -sL https://raw.githubusercontent.com/atzufuki/dotfiles/main/dotfiles.sh | bash
 ```
 
-Wait for the system packages gettings installed, then run the script again to complete the setup.
+Wait for the system packages gettings installed, then reboot and run the script again to complete the setup.
 
 Finally logout and log back in using your preferred containerized desktop environment.
 
