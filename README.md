@@ -5,7 +5,7 @@ This dotfiles setup allows you to reserve the integrity of the immutable host sy
 Apply to fresh install of Fedora Silverblue directly with the following script:
 
 ```bash
-curl -sL https://raw.githubusercontent.com/atzufuki/dotfiles/main/dotfiles.sh | bash
+curl -sL https://raw.githubusercontent.com/atzufuki/dotfiles/main/setup.sh | bash
 ```
 
 Wait for the system packages gettings installed, then reboot and run the script again to complete the setup.
