@@ -1,5 +1,8 @@
 set $mod Mod4
 
+include /etc/sway/config.d/10-systemd-cgroups.conf
+include /etc/sway/config.d/10-systemd-session.conf
+
 include /usr/share/sway/config.d/50-rules-browser.conf
 include /usr/share/sway/config.d/50-pavucontrol.conf
 include /usr/share/sway/config.d/50-rules-policykit-agent.conf
