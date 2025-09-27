@@ -1,3 +1,5 @@
+
+set $mod Mod4
 # Minimal Sway config
 
 # Set keyboard layout
@@ -6,7 +8,7 @@ input * {
 }
 
 # Set output (screen)
-output * bg #000000 solid_color
+output * background #000000 solid_color
 
 # Start a terminal (change to your preferred terminal)
 exec alacritty
