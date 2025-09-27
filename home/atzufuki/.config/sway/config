@@ -17,10 +17,6 @@ set $term foot
 # on the original workspace that the command was run on.
 set $menu dmenu_run
 
-### Output configuration
-set $background /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png
-output * bg $background fill
-
 ### Key bindings
 # Basics:
     # Start a terminal
