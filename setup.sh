@@ -14,7 +14,7 @@ else
 fi
 
 echo "[INFO] Cloning dotfiles repository..."
-if [[ -d "$HOME/.dotfiles/.git" ]]; then
+if [[ -d "$HOME/.dotfiles" ]]; then
     echo "[INFO] Dotfiles repo exists. Pulling latest changes..."
     git -C "$HOME/.dotfiles" pull
 else
