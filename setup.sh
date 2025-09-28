@@ -56,15 +56,12 @@ fi
 
 if ! distrobox list | grep -q fedora-gnome; then
     echo "[INFO] Creating fedora-gnome container..."
-    # distrobox create --name fedora-gnome --init --additional-packages "systemd" --image registry.fedoraproject.org/fedora:rawhide
     distrobox create \
         --name fedora-gnome \
         --volume $XDG_RUNTIME_DIR:$XDG_RUNTIME_DIR \
-        --volume /dev/dri:/dev/dri \
-        --volume /dev/input:/dev/input \
-        --volume /run/udev:/run/udev \
+        --userns keep-id \
         --init \
-        --additional-packages "systemd"  \
+        --additional-packages "systemd" \
         --image registry.fedoraproject.org/fedora:latest
 else
     echo "[INFO] fedora-gnome container already exists."
