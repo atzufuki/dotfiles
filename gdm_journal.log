@@ -1,0 +1,170 @@
+Sep 28 15:23:03 fedora systemd[1]: Starting gdm.service - GNOME Display Manager...
+Sep 28 15:23:03 fedora systemd[1]: Started gdm.service - GNOME Display Manager.
+Sep 28 15:23:03 fedora audit[1]: SERVICE_START pid=1 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:init_t:s0 msg='unit=gdm comm="systemd" exe="/usr/lib/systemd/systemd" hostname=? addr=? terminal=? res=success'
+Sep 28 15:23:03 fedora audit[1172]: USER_AUTH pid=1172 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:xdm_t:s0-s0:c0.c1023 msg='op=PAM:authentication grantors=pam_permit acct="gdm" exe="/usr/libexec/gdm-session-worker" hostname=fedora addr=? terminal=/dev/tty1 res=success'
+Sep 28 15:23:03 fedora audit[1172]: USER_ACCT pid=1172 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:xdm_t:s0-s0:c0.c1023 msg='op=PAM:accounting grantors=pam_permit acct="gdm" exe="/usr/libexec/gdm-session-worker" hostname=fedora addr=? terminal=/dev/tty1 res=success'
+Sep 28 15:23:03 fedora audit[1172]: CRED_ACQ pid=1172 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:xdm_t:s0-s0:c0.c1023 msg='op=PAM:setcred grantors=pam_permit acct="gdm" exe="/usr/libexec/gdm-session-worker" hostname=fedora addr=? terminal=/dev/tty1 res=success'
+Sep 28 15:23:03 fedora systemd-logind[849]: New session c1 of user gdm.
+Sep 28 15:23:03 fedora audit[1189]: USER_ACCT pid=1189 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:init_t:s0 msg='op=PAM:accounting grantors=pam_unix acct="gdm" exe="/usr/lib/systemd/systemd-executor" hostname=? addr=? terminal=? res=success'
+Sep 28 15:23:03 fedora audit[1189]: CRED_ACQ pid=1189 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:init_t:s0 msg='op=PAM:setcred grantors=? acct="gdm" exe="/usr/lib/systemd/systemd-executor" hostname=? addr=? terminal=? res=failed'
+Sep 28 15:23:03 fedora systemd-logind[849]: New session 1 of user gdm.
+Sep 28 15:23:03 fedora (systemd)[1189]: pam_unix(systemd-user:session): session opened for user gdm(uid=42) by gdm(uid=0)
+Sep 28 15:23:03 fedora audit[1189]: USER_START pid=1189 uid=0 auid=42 ses=1 subj=system_u:system_r:init_t:s0 msg='op=PAM:session_open grantors=pam_selinux,pam_selinux,pam_loginuid,pam_keyinit,pam_namespace,pam_systemd_home,pam_umask,pam_keyinit,pam_limits,pam_systemd,pam_unix acct="gdm" exe="/usr/lib/systemd/systemd-executor" hostname=? addr=? terminal=? res=success'
+Sep 28 15:23:03 fedora systemd[1]: Started session-c1.scope - Session c1 of User gdm.
+Sep 28 15:23:03 fedora gdm-launch-environment][1172]: pam_unix(gdm-launch-environment:session): session opened for user gdm(uid=42) by (uid=0)
+Sep 28 15:23:03 fedora audit[1172]: USER_START pid=1172 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:xdm_t:s0-s0:c0.c1023 msg='op=PAM:session_open grantors=pam_keyinit,pam_keyinit,pam_limits,pam_systemd,pam_unix,pam_umask acct="gdm" exe="/usr/libexec/gdm-session-worker" hostname=fedora addr=? terminal=/dev/tty1 res=success'
+Sep 28 15:23:04 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Activating service name='org.freedesktop.systemd1' requested by ':1.2' (uid=42 pid=1216 comm="/usr/libexec/gnome-session-binary --autostart /usr" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:23:04 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Activated service 'org.freedesktop.systemd1' failed: Process org.freedesktop.systemd1 exited with status 1
+Sep 28 15:23:05 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Activating service name='org.a11y.Bus' requested by ':1.4' (uid=42 pid=1228 comm="/usr/bin/gnome-shell" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:23:05 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Successfully activated service 'org.a11y.Bus'
+Sep 28 15:23:05 fedora /usr/libexec/gdm-wayland-session[1276]: dbus-daemon[1276]: Activating service name='org.a11y.atspi.Registry' requested by ':1.0' (uid=42 pid=1228 comm="/usr/bin/gnome-shell" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:23:05 fedora /usr/libexec/gdm-wayland-session[1276]: dbus-daemon[1276]: Successfully activated service 'org.a11y.atspi.Registry'
+Sep 28 15:23:05 fedora /usr/libexec/gdm-wayland-session[1279]: SpiRegistry daemon is running with well-known name - org.a11y.atspi.Registry
+Sep 28 15:23:05 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Activating service name='org.gnome.Shell.Screencast' requested by ':1.3' (uid=42 pid=1228 comm="/usr/bin/gnome-shell" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:23:06 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Activating service name='org.freedesktop.impl.portal.PermissionStore' requested by ':1.3' (uid=42 pid=1228 comm="/usr/bin/gnome-shell" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:23:06 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Successfully activated service 'org.freedesktop.impl.portal.PermissionStore'
+Sep 28 15:23:06 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Activating service name='org.gnome.Shell.Notifications' requested by ':1.3' (uid=42 pid=1228 comm="/usr/bin/gnome-shell" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:23:06 fedora gnome-shell[1228]: Failed to parse saved session file: Failed to open file “/var/lib/gdm/.config/mutter/sessions/10eaf6497ba1c1fea4175906218411826200000012160000.ms”: No such file or directory
+Sep 28 15:23:06 fedora /usr/libexec/gdm-wayland-session[1313]: libva info: VA-API version 1.22.0
+Sep 28 15:23:06 fedora /usr/libexec/gdm-wayland-session[1313]: libva info: Trying to open /usr/lib64/dri-nonfree/iHD_drv_video.so
+Sep 28 15:23:06 fedora /usr/libexec/gdm-wayland-session[1313]: libva info: Trying to open /usr/lib64/dri-freeworld/iHD_drv_video.so
+Sep 28 15:23:06 fedora /usr/libexec/gdm-wayland-session[1313]: libva info: Trying to open /usr/lib64/dri/iHD_drv_video.so
+Sep 28 15:23:06 fedora /usr/libexec/gdm-wayland-session[1313]: libva info: Found init function __vaDriverInit_1_22
+Sep 28 15:23:06 fedora /usr/libexec/gdm-wayland-session[1313]: libva info: va_openDriver() returns 0
+Sep 28 15:23:06 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Successfully activated service 'org.gnome.Shell.Notifications'
+Sep 28 15:23:06 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Activating service name='org.freedesktop.systemd1' requested by ':1.9' (uid=42 pid=1343 comm="/usr/libexec/gsd-sharing" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:23:06 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Activated service 'org.freedesktop.systemd1' failed: Process org.freedesktop.systemd1 exited with status 1
+Sep 28 15:23:06 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Activating service name='org.freedesktop.systemd1' requested by ':1.19' (uid=42 pid=1405 comm="/usr/libexec/gsd-housekeeping" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:23:06 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Activated service 'org.freedesktop.systemd1' failed: Process org.freedesktop.systemd1 exited with status 1
+Sep 28 15:23:06 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Activating service name='org.freedesktop.portal.IBus' requested by ':1.24' (uid=42 pid=1395 comm="ibus-daemon --panel disable" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:23:06 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Successfully activated service 'org.freedesktop.portal.IBus'
+Sep 28 15:23:06 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Activating service name='org.gnome.ScreenSaver' requested by ':1.22' (uid=42 pid=1413 comm="/usr/libexec/gsd-power" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:23:06 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Successfully activated service 'org.gnome.ScreenSaver'
+Sep 28 15:23:06 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Activating service name='org.freedesktop.portal.IBus' requested by ':1.35' (uid=42 pid=1700 comm="ibus-daemon --panel disable -r --xim" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:23:06 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Successfully activated service 'org.freedesktop.portal.IBus'
+Sep 28 15:23:07 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Activating service name='org.freedesktop.portal.Desktop' requested by ':1.38' (uid=42 pid=1693 comm="/usr/libexec/mutter-x11-frames" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:23:07 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Activating service name='org.freedesktop.portal.Documents' requested by ':1.39' (uid=42 pid=1799 comm="/usr/libexec/xdg-desktop-portal" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:23:07 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Successfully activated service 'org.freedesktop.portal.Documents'
+Sep 28 15:23:07 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Activating service name='org.freedesktop.impl.portal.desktop.gnome' requested by ':1.39' (uid=42 pid=1799 comm="/usr/libexec/xdg-desktop-portal" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:23:07 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Successfully activated service 'org.gnome.Shell.Screencast'
+Sep 28 15:23:07 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Activating service name='org.gnome.Settings.GlobalShortcutsProvider' requested by ':1.41' (uid=42 pid=1820 comm="/usr/libexec/xdg-desktop-portal-gnome" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:23:07 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Successfully activated service 'org.gnome.Settings.GlobalShortcutsProvider'
+Sep 28 15:23:07 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Successfully activated service 'org.freedesktop.impl.portal.desktop.gnome'
+Sep 28 15:23:07 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Activating service name='org.freedesktop.impl.portal.desktop.gtk' requested by ':1.39' (uid=42 pid=1799 comm="/usr/libexec/xdg-desktop-portal" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:23:07 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Successfully activated service 'org.freedesktop.impl.portal.desktop.gtk'
+Sep 28 15:23:07 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Activating service name='org.freedesktop.secrets' requested by ':1.39' (uid=42 pid=1799 comm="/usr/libexec/xdg-desktop-portal" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:23:07 fedora /usr/libexec/gdm-wayland-session[1868]: discover_other_daemon: 0
+Sep 28 15:23:07 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Successfully activated service 'org.freedesktop.secrets'
+Sep 28 15:23:07 fedora /usr/libexec/gdm-wayland-session[1215]: dbus-daemon[1215]: [session uid=42 pid=1215 pidfd=5] Successfully activated service 'org.freedesktop.portal.Desktop'
+Sep 28 15:23:12 fedora gdm-password][1881]: gkr-pam: unable to locate daemon control file
+Sep 28 15:23:12 fedora audit[1881]: USER_AUTH pid=1881 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:xdm_t:s0-s0:c0.c1023 msg='op=PAM:authentication grantors=pam_unix,pam_gnome_keyring acct="atzufuki" exe="/usr/libexec/gdm-session-worker" hostname=fedora addr=? terminal=/dev/tty1 res=success'
+Sep 28 15:23:12 fedora gdm-password][1881]: gkr-pam: stashed password to try later in open session
+Sep 28 15:23:12 fedora audit[1881]: USER_ACCT pid=1881 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:xdm_t:s0-s0:c0.c1023 msg='op=PAM:accounting grantors=pam_unix acct="atzufuki" exe="/usr/libexec/gdm-session-worker" hostname=fedora addr=? terminal=/dev/tty1 res=success'
+Sep 28 15:23:12 fedora audit[1881]: CRED_ACQ pid=1881 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:xdm_t:s0-s0:c0.c1023 msg='op=PAM:setcred grantors=pam_unix,pam_gnome_keyring acct="atzufuki" exe="/usr/libexec/gdm-session-worker" hostname=fedora addr=? terminal=/dev/tty1 res=success'
+Sep 28 15:23:12 fedora audit[1881]: USER_ROLE_CHANGE pid=1881 uid=0 auid=1000 ses=2 subj=system_u:system_r:xdm_t:s0-s0:c0.c1023 msg='op=pam_selinux default-context=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 selected-context=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 exe="/usr/libexec/gdm-session-worker" hostname=fedora addr=? terminal=/dev/tty2 res=success'
+Sep 28 15:23:12 fedora gdm-password][1881]: pam_unix(gdm-password:session): session opened for user atzufuki(uid=1000) by atzufuki(uid=0)
+Sep 28 15:23:12 fedora gdm-password][1881]: gkr-pam: gnome-keyring-daemon started properly and unlocked keyring
+Sep 28 15:23:12 fedora audit[1881]: USER_START pid=1881 uid=0 auid=1000 ses=2 subj=system_u:system_r:xdm_t:s0-s0:c0.c1023 msg='op=PAM:session_open grantors=pam_selinux,pam_loginuid,pam_selinux,pam_keyinit,pam_namespace,pam_keyinit,pam_limits,pam_systemd,pam_unix,pam_gnome_keyring,pam_umask acct="atzufuki" exe="/usr/libexec/gdm-session-worker" hostname=fedora addr=? terminal=/dev/tty2 res=success'
+Sep 28 15:23:16 fedora gdm-launch-environment][1172]: pam_unix(gdm-launch-environment:session): session closed for user gdm
+Sep 28 15:23:16 fedora audit[1172]: USER_END pid=1172 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:xdm_t:s0-s0:c0.c1023 msg='op=PAM:session_close grantors=pam_keyinit,pam_keyinit,pam_limits,pam_systemd,pam_unix,pam_umask acct="gdm" exe="/usr/libexec/gdm-session-worker" hostname=fedora addr=? terminal=/dev/tty1 res=success'
+Sep 28 15:23:16 fedora audit[1172]: CRED_DISP pid=1172 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:xdm_t:s0-s0:c0.c1023 msg='op=PAM:setcred grantors=pam_permit acct="gdm" exe="/usr/libexec/gdm-session-worker" hostname=fedora addr=? terminal=/dev/tty1 res=success'
+Sep 28 15:23:16 fedora gdm[1131]: Gdm: Child process -1208 was already dead.
+Sep 28 15:27:30 fedora gdm-password][1881]: pam_unix(gdm-password:session): session closed for user atzufuki
+Sep 28 15:27:30 fedora audit[1881]: USER_END pid=1881 uid=0 auid=1000 ses=2 subj=system_u:system_r:xdm_t:s0-s0:c0.c1023 msg='op=PAM:session_close grantors=pam_selinux,pam_loginuid,pam_selinux,pam_keyinit,pam_namespace,pam_keyinit,pam_limits,pam_systemd,pam_unix,pam_gnome_keyring,pam_umask acct="atzufuki" exe="/usr/libexec/gdm-session-worker" hostname=fedora addr=? terminal=/dev/tty2 res=success'
+Sep 28 15:27:30 fedora audit[1881]: CRED_DISP pid=1881 uid=0 auid=1000 ses=2 subj=system_u:system_r:xdm_t:s0-s0:c0.c1023 msg='op=PAM:setcred grantors=pam_unix,pam_gnome_keyring acct="atzufuki" exe="/usr/libexec/gdm-session-worker" hostname=fedora addr=? terminal=/dev/tty2 res=success'
+Sep 28 15:27:31 fedora audit[3546]: USER_AUTH pid=3546 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:xdm_t:s0-s0:c0.c1023 msg='op=PAM:authentication grantors=pam_permit acct="gdm" exe="/usr/libexec/gdm-session-worker" hostname=fedora addr=? terminal=/dev/tty1 res=success'
+Sep 28 15:27:31 fedora audit[3546]: USER_ACCT pid=3546 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:xdm_t:s0-s0:c0.c1023 msg='op=PAM:accounting grantors=pam_permit acct="gdm" exe="/usr/libexec/gdm-session-worker" hostname=fedora addr=? terminal=/dev/tty1 res=success'
+Sep 28 15:27:31 fedora audit[3546]: CRED_ACQ pid=3546 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:xdm_t:s0-s0:c0.c1023 msg='op=PAM:setcred grantors=pam_permit acct="gdm" exe="/usr/libexec/gdm-session-worker" hostname=fedora addr=? terminal=/dev/tty1 res=success'
+Sep 28 15:27:31 fedora systemd-logind[849]: New session c2 of user gdm.
+Sep 28 15:27:31 fedora audit[3564]: USER_ACCT pid=3564 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:init_t:s0 msg='op=PAM:accounting grantors=pam_unix acct="gdm" exe="/usr/lib/systemd/systemd-executor" hostname=? addr=? terminal=? res=success'
+Sep 28 15:27:31 fedora audit[3564]: CRED_ACQ pid=3564 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:init_t:s0 msg='op=PAM:setcred grantors=? acct="gdm" exe="/usr/lib/systemd/systemd-executor" hostname=? addr=? terminal=? res=failed'
+Sep 28 15:27:31 fedora systemd-logind[849]: New session 4 of user gdm.
+Sep 28 15:27:31 fedora (systemd)[3564]: pam_unix(systemd-user:session): session opened for user gdm(uid=42) by gdm(uid=0)
+Sep 28 15:27:31 fedora audit[3564]: USER_START pid=3564 uid=0 auid=42 ses=4 subj=system_u:system_r:init_t:s0 msg='op=PAM:session_open grantors=pam_selinux,pam_selinux,pam_loginuid,pam_keyinit,pam_namespace,pam_systemd_home,pam_umask,pam_keyinit,pam_limits,pam_systemd,pam_unix acct="gdm" exe="/usr/lib/systemd/systemd-executor" hostname=? addr=? terminal=? res=success'
+Sep 28 15:27:31 fedora systemd[1]: Started session-c2.scope - Session c2 of User gdm.
+Sep 28 15:27:31 fedora gdm-launch-environment][3546]: pam_unix(gdm-launch-environment:session): session opened for user gdm(uid=42) by (uid=0)
+Sep 28 15:27:31 fedora audit[3546]: USER_START pid=3546 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:xdm_t:s0-s0:c0.c1023 msg='op=PAM:session_open grantors=pam_keyinit,pam_keyinit,pam_limits,pam_systemd,pam_unix,pam_umask acct="gdm" exe="/usr/libexec/gdm-session-worker" hostname=fedora addr=? terminal=/dev/tty1 res=success'
+Sep 28 15:27:31 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Activating service name='org.freedesktop.systemd1' requested by ':1.2' (uid=42 pid=3590 comm="/usr/libexec/gnome-session-binary --autostart /usr" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:27:31 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Activated service 'org.freedesktop.systemd1' failed: Process org.freedesktop.systemd1 exited with status 1
+Sep 28 15:27:31 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Activating service name='org.a11y.Bus' requested by ':1.4' (uid=42 pid=3602 comm="/usr/bin/gnome-shell" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:27:31 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Successfully activated service 'org.a11y.Bus'
+Sep 28 15:27:32 fedora /usr/libexec/gdm-wayland-session[3647]: dbus-daemon[3647]: Activating service name='org.a11y.atspi.Registry' requested by ':1.0' (uid=42 pid=3602 comm="/usr/bin/gnome-shell" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:27:32 fedora /usr/libexec/gdm-wayland-session[3647]: dbus-daemon[3647]: Successfully activated service 'org.a11y.atspi.Registry'
+Sep 28 15:27:32 fedora /usr/libexec/gdm-wayland-session[3650]: SpiRegistry daemon is running with well-known name - org.a11y.atspi.Registry
+Sep 28 15:27:32 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Activating service name='org.gnome.Shell.Screencast' requested by ':1.3' (uid=42 pid=3602 comm="/usr/bin/gnome-shell" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:27:32 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Activating service name='org.freedesktop.impl.portal.PermissionStore' requested by ':1.3' (uid=42 pid=3602 comm="/usr/bin/gnome-shell" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:27:32 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Successfully activated service 'org.freedesktop.impl.portal.PermissionStore'
+Sep 28 15:27:32 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Activating service name='org.gnome.Shell.Notifications' requested by ':1.3' (uid=42 pid=3602 comm="/usr/bin/gnome-shell" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:27:32 fedora gnome-shell[3602]: Failed to parse saved session file: Failed to open file “/var/lib/gdm/.config/mutter/sessions/102b3f5fd58502ccee175906245146188000000035900000.ms”: No such file or directory
+Sep 28 15:27:32 fedora /usr/libexec/gdm-wayland-session[3679]: libva info: VA-API version 1.22.0
+Sep 28 15:27:32 fedora /usr/libexec/gdm-wayland-session[3679]: libva info: Trying to open /usr/lib64/dri-nonfree/iHD_drv_video.so
+Sep 28 15:27:32 fedora /usr/libexec/gdm-wayland-session[3679]: libva info: Trying to open /usr/lib64/dri-freeworld/iHD_drv_video.so
+Sep 28 15:27:32 fedora /usr/libexec/gdm-wayland-session[3679]: libva info: Trying to open /usr/lib64/dri/iHD_drv_video.so
+Sep 28 15:27:32 fedora /usr/libexec/gdm-wayland-session[3679]: libva info: Found init function __vaDriverInit_1_22
+Sep 28 15:27:32 fedora /usr/libexec/gdm-wayland-session[3679]: libva info: va_openDriver() returns 0
+Sep 28 15:27:32 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Activating service name='org.freedesktop.systemd1' requested by ':1.9' (uid=42 pid=3704 comm="/usr/libexec/gsd-sharing" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:27:32 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Activated service 'org.freedesktop.systemd1' failed: Process org.freedesktop.systemd1 exited with status 1
+Sep 28 15:27:32 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Successfully activated service 'org.gnome.Shell.Notifications'
+Sep 28 15:27:32 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Activating service name='org.freedesktop.systemd1' requested by ':1.18' (uid=42 pid=3785 comm="/usr/libexec/gsd-housekeeping" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:27:32 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Activated service 'org.freedesktop.systemd1' failed: Process org.freedesktop.systemd1 exited with status 1
+Sep 28 15:27:32 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Activating service name='org.freedesktop.portal.IBus' requested by ':1.25' (uid=42 pid=3759 comm="ibus-daemon --panel disable" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:27:32 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Successfully activated service 'org.freedesktop.portal.IBus'
+Sep 28 15:27:33 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Successfully activated service 'org.gnome.Shell.Screencast'
+Sep 28 15:27:33 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Activating service name='org.gnome.ScreenSaver' requested by ':1.23' (uid=42 pid=3792 comm="/usr/libexec/gsd-power" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:27:33 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Successfully activated service 'org.gnome.ScreenSaver'
+Sep 28 15:27:33 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Activating service name='org.freedesktop.portal.IBus' requested by ':1.35' (uid=42 pid=4096 comm="ibus-daemon --panel disable -r --xim" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:27:33 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Successfully activated service 'org.freedesktop.portal.IBus'
+Sep 28 15:27:33 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Activating service name='org.freedesktop.portal.Desktop' requested by ':1.38' (uid=42 pid=4088 comm="/usr/libexec/mutter-x11-frames" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:27:33 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Activating service name='org.freedesktop.portal.Documents' requested by ':1.39' (uid=42 pid=4138 comm="/usr/libexec/xdg-desktop-portal" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:27:33 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Successfully activated service 'org.freedesktop.portal.Documents'
+Sep 28 15:27:33 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Activating service name='org.freedesktop.impl.portal.desktop.gnome' requested by ':1.39' (uid=42 pid=4138 comm="/usr/libexec/xdg-desktop-portal" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:27:33 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Activating service name='org.gnome.Settings.GlobalShortcutsProvider' requested by ':1.41' (uid=42 pid=4159 comm="/usr/libexec/xdg-desktop-portal-gnome" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:27:33 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Successfully activated service 'org.gnome.Settings.GlobalShortcutsProvider'
+Sep 28 15:27:33 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Successfully activated service 'org.freedesktop.impl.portal.desktop.gnome'
+Sep 28 15:27:33 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Activating service name='org.freedesktop.impl.portal.desktop.gtk' requested by ':1.39' (uid=42 pid=4138 comm="/usr/libexec/xdg-desktop-portal" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:27:33 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Successfully activated service 'org.freedesktop.impl.portal.desktop.gtk'
+Sep 28 15:27:33 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Activating service name='org.freedesktop.secrets' requested by ':1.39' (uid=42 pid=4138 comm="/usr/libexec/xdg-desktop-portal" label="system_u:system_r:xdm_t:s0-s0:c0.c1023")
+Sep 28 15:27:33 fedora /usr/libexec/gdm-wayland-session[4197]: discover_other_daemon: 0
+Sep 28 15:27:33 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Successfully activated service 'org.freedesktop.secrets'
+Sep 28 15:27:33 fedora /usr/libexec/gdm-wayland-session[3589]: dbus-daemon[3589]: [session uid=42 pid=3589 pidfd=5] Successfully activated service 'org.freedesktop.portal.Desktop'
+Sep 28 15:27:39 fedora gdm-password][4208]: gkr-pam: unable to locate daemon control file
+Sep 28 15:27:39 fedora audit[4208]: USER_AUTH pid=4208 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:xdm_t:s0-s0:c0.c1023 msg='op=PAM:authentication grantors=pam_unix,pam_gnome_keyring acct="atzufuki" exe="/usr/libexec/gdm-session-worker" hostname=fedora addr=? terminal=/dev/tty1 res=success'
+Sep 28 15:27:39 fedora gdm-password][4208]: gkr-pam: stashed password to try later in open session
+Sep 28 15:27:39 fedora audit[4208]: USER_ACCT pid=4208 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:xdm_t:s0-s0:c0.c1023 msg='op=PAM:accounting grantors=pam_unix acct="atzufuki" exe="/usr/libexec/gdm-session-worker" hostname=fedora addr=? terminal=/dev/tty1 res=success'
+Sep 28 15:27:39 fedora audit[4208]: CRED_ACQ pid=4208 uid=0 auid=4294967295 ses=4294967295 subj=system_u:system_r:xdm_t:s0-s0:c0.c1023 msg='op=PAM:setcred grantors=pam_unix,pam_gnome_keyring acct="atzufuki" exe="/usr/libexec/gdm-session-worker" hostname=fedora addr=? terminal=/dev/tty1 res=success'
+Sep 28 15:27:39 fedora audit[4208]: USER_ROLE_CHANGE pid=4208 uid=0 auid=1000 ses=5 subj=system_u:system_r:xdm_t:s0-s0:c0.c1023 msg='op=pam_selinux default-context=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 selected-context=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 exe="/usr/libexec/gdm-session-worker" hostname=fedora addr=? terminal=/dev/tty2 res=success'
+Sep 28 15:27:39 fedora gdm-password][4208]: pam_unix(gdm-password:session): session opened for user atzufuki(uid=1000) by atzufuki(uid=0)
+Sep 28 15:27:39 fedora gdm-password][4208]: gkr-pam: gnome-keyring-daemon started properly and unlocked keyring
+Sep 28 15:27:39 fedora audit[4208]: USER_START pid=4208 uid=0 auid=1000 ses=5 subj=system_u:system_r:xdm_t:s0-s0:c0.c1023 msg='op=PAM:session_open grantors=pam_selinux,pam_loginuid,pam_selinux,pam_keyinit,pam_namespace,pam_keyinit,pam_limits,pam_systemd,pam_unix,pam_gnome_keyring,pam_umask acct="atzufuki" exe="/usr/libexec/gdm-session-worker" hostname=fedora addr=? terminal=/dev/tty2 res=success'
+Sep 28 15:27:39 fedora /usr/libexec/gdm-wayland-session[4234]: Unable to run session
+Sep 28 15:27:39 fedora gdm-password][4208]: pam_unix(gdm-password:session): session closed for user atzufuki
+Sep 28 15:27:39 fedora audit[4208]: USER_END pid=4208 uid=0 auid=1000 ses=5 subj=system_u:system_r:xdm_t:s0-s0:c0.c1023 msg='op=PAM:session_close grantors=pam_selinux,pam_loginuid,pam_selinux,pam_keyinit,pam_namespace,pam_keyinit,pam_limits,pam_systemd,pam_unix,pam_gnome_keyring,pam_umask acct="atzufuki" exe="/usr/libexec/gdm-session-worker" hostname=fedora addr=? terminal=/dev/tty2 res=success'
+Sep 28 15:27:39 fedora audit[4208]: CRED_DISP pid=4208 uid=0 auid=1000 ses=5 subj=system_u:system_r:xdm_t:s0-s0:c0.c1023 msg='op=PAM:setcred grantors=pam_unix,pam_gnome_keyring acct="atzufuki" exe="/usr/libexec/gdm-session-worker" hostname=fedora addr=? terminal=/dev/tty2 res=success'
+Sep 28 15:27:39 fedora gdm[1131]: Gdm: GdmDisplay: Session never registered, failing
+Sep 28 15:27:42 fedora gnome-shell[3602]: Failed to start gdm-password verification for user: Gio.IOErrorEnum: The connection is closed
+                                            _startService@resource:///org/gnome/shell/gdm/util.js:679:42
+                                            _beginVerification@resource:///org/gnome/shell/gdm/util.js:706:14
+                                            _getUserVerifier@resource:///org/gnome/shell/gdm/util.js:554:14
+                                            async*_openReauthenticationChannel@resource:///org/gnome/shell/gdm/util.js:517:22
+                                            async*begin@resource:///org/gnome/shell/gdm/util.js:182:18
+                                            begin@resource:///org/gnome/shell/gdm/authPrompt.js:687:28
+                                            _beginVerificationForItem@resource:///org/gnome/shell/gdm/loginDialog.js:1423:26
+                                            _onUserListActivated@resource:///org/gnome/shell/gdm/loginDialog.js:1437:18
+                                            _init/<@resource:///org/gnome/shell/gdm/loginDialog.js:613:18
+                                            _onItemActivated@resource:///org/gnome/shell/gdm/loginDialog.js:213:14
+                                            vfunc_clicked@resource:///org/gnome/shell/gdm/loginDialog.js:114:14
+                                            cancel@resource:///org/gnome/shell/gdm/util.js:192:32
+                                            _cancelAndReset@resource:///org/gnome/shell/gdm/util.js:827:14
+                                            _verificationFailed@resource:///org/gnome/shell/gdm/util.js:873:22
+                                            async*_reportInitError@resource:///org/gnome/shell/gdm/util.js:501:14
+                                            _startService@resource:///org/gnome/shell/gdm/util.js:695:18
+                                            async*_beginVerification@resource:///org/gnome/shell/gdm/util.js:706:14
+                                            _getUserVerifier@resource:///org/gnome/shell/gdm/util.js:554:14
+                                            async*_openReauthenticationChannel@resource:///org/gnome/shell/gdm/util.js:517:22
+                                            async*begin@resource:///org/gnome/shell/gdm/util.js:182:18
+                                            begin@resource:///org/gnome/shell/gdm/authPrompt.js:687:28
+                                            _beginVerificationForItem@resource:///org/gnome/shell/gdm/loginDialog.js:1423:26
+                                            _onUserListActivated@resource:///org/gnome/shell/gdm/loginDialog.js:1437:18
+                                            _init/<@resource:///org/gnome/shell/gdm/loginDialog.js:613:18
+                                            _onItemActivated@resource:///org/gnome/shell/gdm/loginDialog.js:213:14
+                                            vfunc_clicked@resource:///org/gnome/shell/gdm/loginDialog.js:114:14
