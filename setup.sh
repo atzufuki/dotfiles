@@ -60,7 +60,7 @@ if ! distrobox list | grep -q fedora-gnome; then
         --name fedora-gnome \
         --volume $XDG_RUNTIME_DIR:$XDG_RUNTIME_DIR \
         --init \
-        --additional-packages "systemd" \
+        --additional-packages "systemd libpam-systemd pipewire-audio-client-libraries" \
         --image registry.fedoraproject.org/fedora:latest
 else
     echo "[INFO] fedora-gnome container already exists."
