@@ -4,9 +4,11 @@ on:
   push:
     branches: [ main, develop ]
   pull_request:
+    branches: [ main ]
 
 jobs:
-  test:
+  static-tests:
+    name: Static Analysis Tests
     runs-on: ubuntu-latest
     
     steps:
@@ -21,6 +23,7 @@ jobs:
         chmod +x tests/test_symlinks.sh
         chmod +x tests/test_setup.sh
         chmod +x tests/test_gnome_session.sh
+        chmod +x tests/test_integration_gnome.sh
         chmod +x tests/run_all_tests.sh
     
     - name: Run test suite
@@ -36,3 +39,22 @@ jobs:
         echo ""
         echo "=== GNOME Session Tests ==="
         bash tests/test_gnome_session.sh
+
+  integration-tests:
+    name: Integration Tests (Distrobox + GNOME)
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Restore executable permissions
+      run: |
+        chmod +x tests/test_integration_gnome.sh
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y distrobox
+    
+    - name: Run integration tests
+      run: bash tests/test_integration_gnome.sh
