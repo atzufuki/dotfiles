@@ -12,6 +12,17 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
+    - name: Restore executable permissions
+      run: |
+        chmod +x setup.sh
+        chmod +x containers/gnome/bootstrap.sh
+        chmod +x etc/profile.d/fix_tmp.sh
+        chmod +x usr/local/bin/distrobox-gnome-session.sh
+        chmod +x tests/test_symlinks.sh
+        chmod +x tests/test_setup.sh
+        chmod +x tests/test_gnome_session.sh
+        chmod +x tests/run_all_tests.sh
+    
     - name: Run test suite
       run: bash tests/run_all_tests.sh
     
