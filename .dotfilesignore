@@ -2,3 +2,4 @@
 containers/
 setup.sh
 README.md
+tests/

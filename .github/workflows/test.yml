@@ -1,0 +1,27 @@
+name: Dotfiles Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Run test suite
+      run: bash tests/run_all_tests.sh
+    
+    - name: Run individual test suites
+      run: |
+        echo "=== Symlink Tests ==="
+        bash tests/test_symlinks.sh
+        echo ""
+        echo "=== Setup Tests ==="
+        bash tests/test_setup.sh
+        echo ""
+        echo "=== GNOME Session Tests ==="
+        bash tests/test_gnome_session.sh
