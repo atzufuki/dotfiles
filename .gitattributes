@@ -1,0 +1,7 @@
+* text=auto
+*.sh eol=lf
+/setup.sh eol=lf export-ignore
+/containers/gnome/bootstrap.sh eol=lf export-ignore
+/etc/profile.d/fix_tmp.sh eol=lf export-ignore
+/usr/local/bin/distrobox-gnome-session.sh eol=lf export-ignore
+/tests/*.sh eol=lf export-ignore
