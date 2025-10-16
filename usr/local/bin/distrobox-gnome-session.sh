@@ -1,5 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-xhost +si:localuser:$USER
-# Only Wayland mounts and flags
-/usr/bin/distrobox-enter -T -n fedora-gnome --additional-flags "--env XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR --env WAYLAND_DISPLAY=$WAYLAND_DISPLAY" -- /usr/bin/gnome-session
+# Allow local user X11 access
+xhost +si:localuser:$USER >/dev/null 2>&1 || true
+
+# Launch GNOME session in container with proper systemd user setup
+# The container will have systemd available for session management
+exec /usr/bin/distrobox-enter -n fedora-gnome -- \
+    /usr/bin/env bash -c 'exec systemd-run --user --scope --collect gnome-session'
