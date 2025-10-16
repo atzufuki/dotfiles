@@ -33,9 +33,19 @@ echo "=== Test Suite: Setup Script Validation ==="
 assert_true "[[ -f '$SETUP_SCRIPT' ]]" \
     "setup.sh file exists"
 
-# Test 2: Setup script is executable
-assert_true "[[ -x '$SETUP_SCRIPT' ]]" \
-    "setup.sh is executable"
+# Test 2: Setup script is executable (warning on Windows/Git)
+if [[ -x "$SETUP_SCRIPT" ]]; then
+    echo -e "${GREEN}✓${NC} setup.sh is executable"
+    ((TESTS_PASSED++))
+else
+    # On Windows with git, file permissions may not be preserved
+    if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "win32" ]]; then
+        echo -e "${YELLOW}⚠${NC} setup.sh executable check skipped on Windows (permissions not tracked by git)"
+    else
+        echo -e "${RED}✗${NC} setup.sh is not executable"
+        ((TESTS_FAILED++))
+    fi
+fi
 
 # Test 3: Setup script has correct shebang
 assert_true "[[ \"\$(head -n1 '$SETUP_SCRIPT')\" == '#!/usr/bin/env bash' ]]" \
