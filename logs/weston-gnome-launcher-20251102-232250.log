@@ -1,0 +1,225 @@
+=== Session started at su 2.11.2025 23.22.50 +0200 ===
+Environment:
+DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
+DESKTOP_SESSION=distrobox-gnome
+GDM_LANG=fi_FI.UTF-8
+GDMSESSION=distrobox-gnome
+HOME=/home/atzufuki
+LANG=fi_FI.UTF-8
+LOGNAME=atzufuki
+PATH=/usr/local/bin:/usr/bin
+PWD=/home/atzufuki
+SHELL=/bin/bash
+SHLVL=1
+USER=atzufuki
+USERNAME=atzufuki
+_=/usr/bin/env
+XDG_CURRENT_DESKTOP=GNOME
+XDG_DATA_DIRS=/home/atzufuki/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share/:/usr/share/
+XDG_RUNTIME_DIR=/run/user/1000
+XDG_SEAT=seat0
+XDG_SESSION_CLASS=user
+XDG_SESSION_DESKTOP=distrobox-gnome
+XDG_SESSION_ID=2
+XDG_SESSION_TYPE=wayland
+XDG_VTNR=2
+
+Running on TTY, using DRM backend with software rendering
+Waiting for Weston to initialize...
+Date: 2025-11-02 EET
+[23:22:50.542] weston 14.0.2
+               https://wayland.freedesktop.org
+               Bug reports to: https://gitlab.freedesktop.org/wayland/weston/issues/
+               Build: 14.0.2
+[23:22:50.542] Command line: weston --backend=drm-backend.so
+[23:22:50.542] OS: Linux, 6.17.5-300.fc43.x86_64, #1 SMP PREEMPT_DYNAMIC Thu Oct 23 15:35:13 UTC 2025, x86_64
+[23:22:50.542] Flight recorder: enabled
+[23:22:50.542] Starting with no config file.
+[23:22:50.542] Output repaint window is 7 ms maximum.
+[23:22:50.544] Loading module '/usr/lib64/libweston-14/drm-backend.so'
+[23:22:50.547] initializing drm backend
+[23:22:50.547] Trying libseat launcher...
+[23:22:50.549] [libseat/libseat.c:62] Seat opened with backend 'logind'
+[23:22:50.549] libseat: session control granted
+[23:22:50.552] using /dev/dri/card0
+[23:22:50.552] DRM: supports atomic modesetting
+[23:22:50.552] DRM: supports GBM modifiers
+[23:22:50.552] DRM: does not support Atomic async page flip
+[23:22:50.553] DRM: supports picture aspect ratio
+VMware: No 3D enabled (0, Success).
+VMware: No 3D enabled (0, Success).
+[23:22:50.570] Loading module '/usr/lib64/libweston-14/gl-renderer.so'
+[23:22:50.572] warning: failed to query rendering device from EGL
+[23:22:50.572] EGL version: 1.5
+[23:22:50.572] EGL vendor: Mesa Project
+[23:22:50.572] EGL client APIs: OpenGL OpenGL_ES 
+[23:22:50.572] EGL features:
+               EGL Wayland extension: no
+               context priority: no
+               buffer age: yes
+               partial update: no
+               swap buffers with damage: no
+               configless context: yes
+               surfaceless context: yes
+               dmabuf support: modifiers
+[23:22:50.585] GL version: OpenGL ES 3.2 Mesa 25.2.5
+[23:22:50.585] GLSL version: OpenGL ES GLSL ES 3.20
+[23:22:50.585] GL vendor: Mesa
+[23:22:50.585] GL renderer: llvmpipe (LLVM 21.1.2, 256 bits)
+[23:22:50.594] GL ES 3.2 - renderer features:
+               read-back format: ARGB8888
+               glReadPixels supports y-flip: yes
+               glReadPixels supports PBO: yes
+               wl_shm 10 bpc formats: yes
+               wl_shm 16 bpc formats: yes
+               wl_shm half-float formats: yes
+               internal R and RG formats: yes
+               OES_EGL_image_external: yes
+[23:22:50.594] Using GL renderer
+[23:22:50.601] event0  - Power Button: is tagged by udev as: Keyboard
+[23:22:50.601] event0  - Power Button: device is a keyboard
+[23:22:50.603] event1  - Sleep Button: is tagged by udev as: Keyboard
+[23:22:50.603] event1  - Sleep Button: device is a keyboard
+[23:22:50.605] event5  - Video Bus: is tagged by udev as: Keyboard
+[23:22:50.605] event5  - Video Bus: device is a keyboard
+[23:22:50.608] event6  - VirtualBox mouse integration: is tagged by udev as: Mouse
+[23:22:50.608] event6  - VirtualBox mouse integration: device is a pointer
+[23:22:50.665] event4  - VirtualBox USB Tablet: is tagged by udev as: Mouse
+[23:22:50.666] event4  - VirtualBox USB Tablet: device is a pointer
+[23:22:50.668] event2  - AT Translated Set 2 keyboard: is tagged by udev as: Keyboard
+[23:22:50.668] event2  - AT Translated Set 2 keyboard: device is a keyboard
+[23:22:50.669] event3  - ImExPS/2 Generic Explorer Mouse: is tagged by udev as: Mouse
+[23:22:50.670] event3  - ImExPS/2 Generic Explorer Mouse: emulating high-resolution scroll wheel events.
+[23:22:50.670] event3  - ImExPS/2 Generic Explorer Mouse: device is a pointer
+[23:22:50.671] event7  - PC Speaker: not tagged as supported input device
+[23:22:50.672] event7  - not using input device '/dev/input/event7'
+[23:22:50.674] libinput: configuring device "Power Button".
+[23:22:50.674] libinput: configuring device "Sleep Button".
+[23:22:50.674] libinput: configuring device "Video Bus".
+[23:22:50.674] libinput: configuring device "VirtualBox mouse integration".
+[23:22:50.674] input device event6 has no enabled output associated (none named), skipping calibration for now.
+[23:22:50.674] libinput: configuring device "VirtualBox USB Tablet".
+[23:22:50.674] input device event4 has no enabled output associated (none named), skipping calibration for now.
+[23:22:50.674] libinput: configuring device "AT Translated Set 2 keyboard".
+[23:22:50.674] libinput: configuring device "ImExPS/2 Generic Explorer Mouse".
+[23:22:50.674] DRM: head 'Virtual-1' found, connector 42 is connected, EDID make 'unknown', model 'unknown', serial ''
+               Supported EOTF modes: SDR
+               Supported colorimetry modes: default
+[23:22:50.675] DRM: head 'Virtual-2' found, connector 51 is disconnected.
+[23:22:50.675] DRM: head 'Virtual-3' found, connector 60 is disconnected.
+[23:22:50.675] DRM: head 'Virtual-4' found, connector 69 is disconnected.
+[23:22:50.675] DRM: head 'Virtual-5' found, connector 78 is disconnected.
+[23:22:50.675] DRM: head 'Virtual-6' found, connector 87 is disconnected.
+[23:22:50.675] DRM: head 'Virtual-7' found, connector 96 is disconnected.
+[23:22:50.675] DRM: head 'Virtual-8' found, connector 105 is disconnected.
+[23:22:50.675] Registered plugin API 'weston_drm_output_api_v1' of size 40
+[23:22:50.675] Registered plugin API 'weston_drm_virtual_output_api_v2' of size 48
+[23:22:50.675] Color manager: no-op
+                 protocol support: no
+[23:22:50.675] Output 'Virtual-1' attempts EOTF mode SDR and colorimetry mode default.
+[23:22:50.675] Output 'Virtual-1' using color profile: stock sRGB color profile
+[23:22:50.675] Chosen EGL config details: id:  31 rgba: 8 8 8 0 buf: 24 dep:  0 stcl: 0 int: 1-1 type: win vis_id: XRGB8888 (0x34325258)
+[23:22:50.675] Output Virtual-1 (crtc 44) video modes:
+               1601x941@60.0, preferred, current, 114.6 MHz
+               1920x1440@60.0, 234.0 MHz
+               1856x1392@60.0, 218.2 MHz
+               1792x1344@60.0, 204.8 MHz
+               2048x1152@60.0, 162.0 MHz
+               1920x1200@59.9, 193.2 MHz
+               1920x1200@60.0, 154.0 MHz
+               1920x1080@60.0, 148.5 MHz
+               1600x1200@60.0, 162.0 MHz
+               1680x1050@60.0, 146.2 MHz
+               1680x1050@59.9, 119.0 MHz
+               1400x1050@60.0, 121.8 MHz
+               1400x1050@59.9, 101.0 MHz
+               1600x900@60.0, 108.0 MHz
+               1280x1024@60.0, 108.0 MHz
+               1440x900@59.9, 106.5 MHz
+               1440x900@59.9, 88.8 MHz
+               1280x960@60.0, 108.0 MHz
+               1366x768@59.8, 85.5 MHz
+               1366x768@60.0, 72.0 MHz
+               1360x768@60.0, 85.5 MHz
+               1280x800@59.8, 83.5 MHz
+               1280x800@59.9, 71.0 MHz
+               1280x768@59.9, 79.5 MHz
+               1280x768@60.0, 68.2 MHz
+               1280x720@60.0, 74.2 MHz
+               1024x768@60.0, 65.0 MHz
+               800x600@60.3, 40.0 MHz
+               800x600@56.2, 36.0 MHz
+               848x480@60.0, 33.8 MHz
+               640x480@59.9, 25.2 MHz
+[23:22:50.675] associating input device event0 with output Virtual-1 (none by udev)
+[23:22:50.675] associating input device event1 with output Virtual-1 (none by udev)
+[23:22:50.675] associating input device event5 with output Virtual-1 (none by udev)
+[23:22:50.675] associating input device event6 with output Virtual-1 (none by udev)
+[23:22:50.675] associating input device event4 with output Virtual-1 (none by udev)
+[23:22:50.676] associating input device event2 with output Virtual-1 (none by udev)
+[23:22:50.676] associating input device event3 with output Virtual-1 (none by udev)
+[23:22:50.676] Output 'Virtual-1' enabled with head(s) Virtual-1
+[23:22:50.676] Compositor capabilities:
+               arbitrary surface rotation: yes
+               screen capture uses y-flip: yes
+               cursor planes: yes
+               arbitrary resolutions: no
+               view mask clipping: yes
+               explicit sync: yes
+               color operations: yes
+               presentation clock: CLOCK_MONOTONIC, id 1
+               presentation clock resolution: 0.000000001 s
+[23:22:50.677] Loading module '/usr/lib64/weston/desktop-shell.so'
+[23:22:50.677] launching '/usr/libexec/weston-keyboard'
+[23:22:50.678] launching '/usr/libexec/weston-desktop-shell'
+could not load cursor 'dnd-copy'
+could not load cursor 'dnd-none'
+could not load cursor 'dnd-copy'
+could not load cursor 'dnd-none'
+Weston ready
+Starting GNOME session at su 2.11.2025 23.22.51 +0200
+GNOME session PID: 2072
+Waiting for GNOME session to finish...
+time="2025-11-02T23:22:51+02:00" level=error msg="Refreshing volume 934f01d308bc4cdffff3672671eaa148a67662263d986fa9bfe0a4b03d1deb4e: acquiring lock 1 for volume 934f01d308bc4cdffff3672671eaa148a67662263d986fa9bfe0a4b03d1deb4e: file exists"
+time="2025-11-02T23:22:51+02:00" level=error msg="Refreshing volume f497723a599b711cf706176bb90609de8ec9095c021eccf3f183f6fd858955db: acquiring lock 2 for volume f497723a599b711cf706176bb90609de8ec9095c021eccf3f183f6fd858955db: file exists"
+time="2025-11-02T23:22:51+02:00" level=error msg="Refreshing volume 8ae367ba893bc0057ba1adc9dfb85e4561ccae3a19edce270e3020a512bf7020: acquiring lock 3 for volume 8ae367ba893bc0057ba1adc9dfb85e4561ccae3a19edce270e3020a512bf7020: file exists"
+Starting container...                   	[32m [ OK ]
+[0mInstalling basic packages...            	[32m [ OK ]
+[0mSetting up devpts mounts...             	[32m [ OK ]
+[0mSetting up read-only mounts...          	[32m [ OK ]
+[0mSetting up read-write mounts...         	[32m [ OK ]
+[0mSetting up host's sockets integration...	[32m [ OK ]
+[0mIntegrating host's themes, icons, fonts...	[32m [ OK ]
+[0mSetting up distrobox profile...         	[32m [ OK ]
+[0mSetting up sudo...                      	[32m [ OK ]
+[0mSetting up user's group list...         	[32m [ OK ]
+[0mSetting up init system...               	[32m [ OK ]
+[0mFiring up init system...                	could not load cursor 'dnd-copy'
+could not load cursor 'dnd-none'
+Unknown OSC escape code 3008, text start=dc57b354-a171-4225-9b70-cb076fc8463f;user=atzufuki;hostname=fedora;machineid=254eac9ba50641f08799821a99bff422;bootid=920727b8-802f-4403-9dc0-92ddb47cfc96;pid=3503;type=shell;cwd=/home/atzufuki
+Unknown parameter: ?2004
+[32m [ OK ]
+[0m
+Container Setup Complete!
+=== GNOME Session start at su 2.11.2025 21.24.01 +0000 ===
+Waiting for Wayland display...
+Found Wayland display: 1
+Container environment ready:
+  WAYLAND_DISPLAY=1
+  XDG_RUNTIME_DIR=/run/user/1000
+
+Checking systemd user session...
+Systemd user session is running
+Starting GNOME Session...
+Logs saved to: /home/atzufuki/dotfiles/logs/start-gnome-20251102-212401.log
+dbus-daemon[1493]: [session uid=1000 pid=1493 pidfd=5] Activating service name='org.freedesktop.Flatpak' requested by ':1.0' (uid=1000 pid=1518 comm="host-spawn sh -c printf %s $XAUTHORITY" label="unconfined_u:unconfined_r:spc_t:s0")
+dbus-daemon[1493]: [session uid=1000 pid=1493 pidfd=5] Successfully activated service 'org.freedesktop.Flatpak'
+
+** (process:1494): WARNING **: 21:24:02.340: Failed to upload environment to systemd: GDBus.Error:org.freedesktop.DBus.Error.NameHasNoOwner: Name "org.freedesktop.systemd1" does not exist
+
+** (process:1494): WARNING **: 21:24:02.342: Failed to check if unit gnome-session-wayland@gnome.target is active: GDBus.Error:org.freedesktop.DBus.Error.NameHasNoOwner: Name "org.freedesktop.systemd1" does not exist
+
+** (process:1494): WARNING **: 21:24:02.342: Failed to reset failed state of units: GDBus.Error:org.freedesktop.DBus.Error.NameHasNoOwner: Name "org.freedesktop.systemd1" does not exist
+** Message: 21:24:02.342: Starting GNOME session target: gnome-session-wayland@gnome.target
+
+** (process:1494): ERROR **: 21:24:02.342: Failed to start unit gnome-session-wayland@gnome.target: GDBus.Error:org.freedesktop.DBus.Error.NameHasNoOwner: Name "org.freedesktop.systemd1" does not exist

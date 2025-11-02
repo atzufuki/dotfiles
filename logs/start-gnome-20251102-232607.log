@@ -1,0 +1,13 @@
+=== GNOME Session start at su 2.11.2025 23.26.07 +0200 ===
+Waiting for Wayland display...
+Found Wayland display: 1
+Container environment ready:
+  WAYLAND_DISPLAY=1
+  XDG_RUNTIME_DIR=/run/user/1000
+
+Starting systemd user session...
+Systemd user session started (PID: 2690)
+Trying to run as user instance, but the system has not been booted with systemd.
+Starting GNOME Session...
+Logs saved to: /home/atzufuki/dotfiles/logs/start-gnome-20251102-232607.log
+** Message: 23:26:12.382: Starting GNOME session target: gnome-session-wayland@gnome.target
