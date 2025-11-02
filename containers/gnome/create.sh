@@ -33,6 +33,8 @@ distrobox create \
         --device /dev/snd \
         --volume=\$XDG_RUNTIME_DIR:\$XDG_RUNTIME_DIR \
         --env XDG_RUNTIME_DIR=\$XDG_RUNTIME_DIR \
+        --cgroupns=host \
+        --annotation=run.oci.keep_original_groups=1 \
         $EXTRA_ENV"
 
 echo "Container created successfully!"
