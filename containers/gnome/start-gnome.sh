@@ -6,6 +6,7 @@
 export XDG_SESSION_TYPE=wayland
 export XDG_CURRENT_DESKTOP=GNOME
 export XDG_SESSION_CLASS=user
+export XDG_SESSION_DESKTOP=gnome
 
 # Ensure XDG_RUNTIME_DIR is set (should be passed from host)
 if [ -z "$XDG_RUNTIME_DIR" ]; then
@@ -19,5 +20,12 @@ if [ -z "$WAYLAND_DISPLAY" ]; then
     exit 1
 fi
 
-# Start GNOME Session (not as display server, we connect to host's compositor)
-exec dbus-run-session -- gnome-session
+# Start required services manually (since systemd might not be fully working)
+# Start D-Bus session bus
+if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
+    eval $(dbus-launch --sh-syntax)
+fi
+
+# Start GNOME Shell directly (bypassing gnome-session which requires systemd)
+# This connects to the host's Wayland compositor (cage)
+exec gnome-shell --wayland --no-x11
