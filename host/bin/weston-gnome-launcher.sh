@@ -26,5 +26,30 @@ export XDG_SESSION_TYPE=wayland
 # This avoids EGL/GL issues in virtual machines
 export WESTON_RENDERER=pixman
 
-# Launch weston in fullscreen mode with the GNOME session launcher
-exec weston --backend=$BACKEND --shell=fullscreen-shell.so -- /usr/local/bin/gnome-session.sh
+# Start Weston in background
+weston --backend=$BACKEND &
+WESTON_PID=$!
+
+# Wait for Weston to create Wayland socket
+echo "Waiting for Weston to initialize..."
+timeout=30
+while [ $timeout -gt 0 ]; do
+    if ls "$XDG_RUNTIME_DIR"/wayland-* &>/dev/null; then
+        echo "Weston ready"
+        break
+    fi
+    sleep 0.5
+    timeout=$((timeout - 1))
+done
+
+if [ $timeout -eq 0 ]; then
+    echo "ERROR: Weston failed to start"
+    kill $WESTON_PID 2>/dev/null || true
+    exit 1
+fi
+
+# Now launch GNOME session
+/usr/local/bin/gnome-session.sh
+
+# Cleanup when GNOME exits
+kill $WESTON_PID 2>/dev/null || true

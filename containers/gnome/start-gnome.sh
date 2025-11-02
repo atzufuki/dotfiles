@@ -35,4 +35,4 @@ fi
 
 # Start GNOME Shell in nested mode
 # This allows it to run as a client inside Weston rather than as a compositor
-exec gnome-shell --wayland --nested
+exec gnome-shell --wayland --nested --no-x11
