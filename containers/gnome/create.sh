@@ -22,10 +22,11 @@ if [ -n "$WAYLAND_DISPLAY" ]; then
 fi
 
 # Create the distrobox with all necessary bindings
+# Note: NOT using --init to avoid cgroup permission issues
+# systemd user session will be started manually inside the container
 distrobox create \
     --name "$CONTAINER_NAME" \
     --image "$IMAGE_NAME" \
-    --init \
     --additional-flags "\
         --ipc=host \
         --security-opt label=disable \
@@ -33,8 +34,6 @@ distrobox create \
         --device /dev/snd \
         --volume=\$XDG_RUNTIME_DIR:\$XDG_RUNTIME_DIR \
         --env XDG_RUNTIME_DIR=\$XDG_RUNTIME_DIR \
-        --cgroupns=host \
-        --annotation=run.oci.keep_original_groups=1 \
         $EXTRA_ENV"
 
 echo "Container created successfully!"

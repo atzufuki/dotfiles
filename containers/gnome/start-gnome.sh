@@ -14,10 +14,13 @@ if [ -z "$XDG_RUNTIME_DIR" ]; then
     exit 1
 fi
 
-# Ensure WAYLAND_DISPLAY is set (should point to host's Wayland socket)
-if [ -z "$WAYLAND_DISPLAY" ]; then
-    echo "ERROR: WAYLAND_DISPLAY is not set"
-    exit 1
+# WAYLAND_DISPLAY will be set by weston, so we don't require it here
+# It gets set after weston starts on the host
+
+# Start systemd user session if not already running
+if ! systemctl --user is-system-running &>/dev/null; then
+    echo "Starting systemd user session..."
+    systemctl --user start default.target
 fi
 
 # Start GNOME Session which handles systemd integration
