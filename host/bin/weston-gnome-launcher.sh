@@ -72,6 +72,9 @@ wait $GNOME_PID
 GNOME_EXIT=$?
 echo "GNOME session exited with code: $GNOME_EXIT at $(date)"
 
+# Keep session alive for a moment to ensure proper cleanup
+sleep 2
+
 # Cleanup when GNOME exits
 echo "Cleaning up Weston..."
 kill $WESTON_PID 2>/dev/null || true

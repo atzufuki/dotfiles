@@ -93,9 +93,11 @@ install_launchers() {
     # Copy bin scripts to /usr/local/bin
     sudo cp "$SCRIPT_DIR/host/bin/gnome-session.sh" /usr/local/bin/
     sudo cp "$SCRIPT_DIR/host/bin/weston-gnome-launcher.sh" /usr/local/bin/
+    sudo cp "$SCRIPT_DIR/host/bin/gdm-weston-wrapper.sh" /usr/local/bin/
     
     sudo chmod +x /usr/local/bin/gnome-session.sh
     sudo chmod +x /usr/local/bin/weston-gnome-launcher.sh
+    sudo chmod +x /usr/local/bin/gdm-weston-wrapper.sh
     
     # Copy desktop session file
     sudo mkdir -p /usr/share/wayland-sessions
