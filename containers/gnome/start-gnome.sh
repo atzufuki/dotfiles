@@ -33,6 +33,13 @@ if [ -z "$WAYLAND_DISPLAY" ]; then
     exit 1
 fi
 
-# Start GNOME Shell in nested mode
-# This allows it to run as a client inside Weston rather than as a compositor
-exec gnome-shell --wayland --nested --no-x11
+echo "Container environment ready:"
+echo "  WAYLAND_DISPLAY=$WAYLAND_DISPLAY"
+echo "  XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR"
+echo ""
+echo "Starting GNOME Session..."
+
+# Start GNOME Session (not gnome-shell directly)
+# gnome-session will handle starting GNOME Shell properly
+# and will detect that we're running under another compositor
+exec dbus-run-session -- gnome-session
