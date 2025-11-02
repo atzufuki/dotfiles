@@ -20,12 +20,12 @@ if [ -z "$WAYLAND_DISPLAY" ]; then
     exit 1
 fi
 
-# Start required services manually (since systemd might not be fully working)
 # Start D-Bus session bus
 if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
     eval $(dbus-launch --sh-syntax)
 fi
 
-# Start GNOME Shell directly (bypassing gnome-session which requires systemd)
-# This connects to the host's Wayland compositor (cage)
-exec gnome-shell --wayland --no-x11
+# Start GNOME Shell as a nested Wayland compositor inside Weston
+# --wayland makes it run as a nested compositor
+# --nested tells it to run inside another Wayland compositor
+exec gnome-shell --wayland --nested

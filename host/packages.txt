@@ -6,7 +6,8 @@ podman
 distrobox
 
 # Wayland compositor for session management
-cage
+# Using weston as the host compositor for nested GNOME Shell
+weston
 
 # Audio system
 pipewire

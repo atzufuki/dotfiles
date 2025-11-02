@@ -19,7 +19,7 @@ This project implements a **container-based desktop environment** architecture w
 │                    │                                 │
 │                    ▼                                 │
 │  ┌────────────────────────────────────────────┐    │
-│  │  cage-gnome-launcher.sh               │    │
+│  │  weston-gnome-launcher.sh               │    │
 │  │  (Session Entry Point)                     │    │
 │  └─────────────────┬───────────────────────────┘    │
 │                    │                                 │
@@ -77,7 +77,7 @@ This project implements a **container-based desktop environment** architecture w
 **Key Packages:**
 - `podman` - OCI container runtime
 - `distrobox` - User-friendly container management
-- `cage` - Micro-compositor for nested sessions
+- `weston` - Micro-compositor for nested sessions
 - `pipewire` + `wireplumber` - Audio system
 - `mesa-dri-drivers` - GPU drivers
 - `xorg-x11-server-Xwayland` - X11 compatibility
@@ -86,7 +86,7 @@ This project implements a **container-based desktop environment** architecture w
 - Boot process
 - Hardware management
 - Container orchestration
-- Display server hosting (cage)
+- Display server hosting (weston)
 
 ### 2. Cage Compositor
 
@@ -100,7 +100,7 @@ This project implements a **container-based desktop environment** architecture w
 
 **Configuration:**
 ```bash
-cage \
+weston \
   --prefer-vk-device /dev/dri/renderD128 \
   --adaptive-sync \
   --rt \
@@ -239,7 +239,7 @@ $XDG_RUNTIME_DIR/$WAYLAND_DISPLAY  → Wayland socket
 ### Host System
 ```
 /usr/local/bin/
-├── cage-gnome-launcher.sh    # Entry point from login manager
+├── weston-gnome-launcher.sh    # Entry point from login manager
 └── gnome-session.sh                # Distrobox launcher
 
 /usr/share/wayland-sessions/
@@ -261,11 +261,11 @@ $XDG_RUNTIME_DIR/$WAYLAND_DISPLAY  → Wayland socket
 
 1. **User selects "GNOME (Distrobox)" at login screen**
    - Display manager reads `/usr/share/wayland-sessions/distrobox-gnome.desktop`
-   - Executes: `/usr/local/bin/cage-gnome-launcher.sh`
+   - Executes: `/usr/local/bin/weston-gnome-launcher.sh`
 
 2. **Cage launcher starts compositor**
    ```bash
-   exec cage -- /usr/local/bin/gnome-session.sh
+   exec weston -- /usr/local/bin/gnome-session.sh
    ```
    - Cage creates Wayland display server
    - Forks child process for session script

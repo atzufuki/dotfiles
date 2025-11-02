@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=GNOME (Distrobox Container)
-Comment=GNOME Desktop Environment running in Distrobox container via Cage compositor
-Exec=/usr/local/bin/cage-gnome-launcher.sh
+Comment=GNOME Desktop Environment running in Distrobox container via Weston compositor
+Exec=/usr/local/bin/weston-gnome-launcher.sh
 Type=Application
 DesktopNames=GNOME
 X-GDM-SessionRegisters=true

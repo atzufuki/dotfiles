@@ -1,6 +1,6 @@
 # Container-Based Desktop Environment for Fedora
 
-Run a **minimal, immutable-style Fedora host** with desktop environments isolated in Distrobox containers. No GNOME or KDE installed on the host—only a lightweight Wayland compositor (cage) that launches containerized desktops.
+Run a **minimal, immutable-style Fedora host** with desktop environments isolated in Distrobox containers. No GNOME or KDE installed on the host—only a lightweight Wayland compositor (weston) that launches containerized desktops.
 
 ## Features
 
@@ -20,7 +20,7 @@ Fedora Minimal Host
         └── GNOME/KDE/Steam Desktop
 ```
 
-**Host packages:** podman, distrobox, cage, pipewire, mesa drivers  
+**Host packages:** podman, distrobox, weston, pipewire, mesa drivers  
 **Container:** Full desktop environment with GPU and audio access
 
 ## Quick Start
@@ -51,7 +51,7 @@ curl -sL https://raw.githubusercontent.com/atzufuki/dotfiles/main/setup.sh | bas
 ### Host System
 - `podman` - Container runtime
 - `distrobox` - Container management
-- `cage` - Minimal Wayland compositor
+- `weston` - Minimal Wayland compositor
 - `pipewire` + `wireplumber` - Audio system
 - Mesa GPU drivers + Xwayland
 
@@ -94,7 +94,7 @@ dotfiles/
 ├── host/                             # Host system files
 │   ├── packages.txt                  # DNF packages for host
 │   ├── bin/
-│   │   ├── cage-gnome-launcher.sh
+│   │   ├── weston-gnome-launcher.sh
 │   │   └── gnome-session.sh
 │   └── wayland-sessions/
 │       └── distrobox-gnome.desktop   # Login manager entry
@@ -112,7 +112,7 @@ dotfiles/
 ## How It Works
 
 1. **Host boots** → Minimal Fedora with no DE installed
-2. **User logs in** → Login manager launches `cage-gnome-launcher.sh`
+2. **User logs in** → Login manager launches `weston-gnome-launcher.sh`
 3. **Cage starts** → Minimal Wayland compositor provides display server
 4. **Distrobox enters container** → Runs `gnome-box` container
 5. **GNOME Shell launches** → Full desktop inside container
@@ -163,7 +163,7 @@ pactl info
 
 - [GitHub Issue #3](https://github.com/atzufuki/dotfiles/issues/3) - Original proposal
 - [Distrobox Documentation](https://distrobox.it/)
-- [Cage Wayland Compositor](https://github.com/cage-kiosk/cage)
+- [Cage Wayland Compositor](https://github.com/weston-kiosk/weston)
 - [Running GNOME/KDE on Distrobox](https://distrobox.it/posts/run_latest_gnome_kde_on_distrobox/)
 
 ## License
