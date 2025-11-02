@@ -2,6 +2,15 @@
 # Weston wrapper for launching containerized GNOME desktop
 # This is the entry point called by the display manager
 
+# Enable logging
+LOG_FILE="/tmp/weston-gnome-launcher-$USER.log"
+exec 1> >(tee -a "$LOG_FILE")
+exec 2>&1
+
+echo "=== Session started at $(date) ==="
+echo "Environment:"
+env | sort
+
 set -e
 
 # Detect if we're in a Wayland session or on bare TTY
@@ -49,14 +58,21 @@ if [ $timeout -eq 0 ]; then
 fi
 
 # Now launch GNOME session and wait for it to finish
+echo "Starting GNOME session at $(date)"
 /usr/local/bin/gnome-session.sh &
 GNOME_PID=$!
+echo "GNOME session PID: $GNOME_PID"
 
 # Wait for GNOME session to finish
+echo "Waiting for GNOME session to finish..."
 wait $GNOME_PID
+GNOME_EXIT=$?
+echo "GNOME session exited with code: $GNOME_EXIT at $(date)"
 
 # Cleanup when GNOME exits
+echo "Cleaning up Weston..."
 kill $WESTON_PID 2>/dev/null || true
 wait $WESTON_PID 2>/dev/null || true
 
-echo "Session ended"
+echo "Session ended at $(date)"
+echo "Log saved to: $LOG_FILE"
