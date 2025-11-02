@@ -49,6 +49,18 @@ echo ""
 
 echo "Starting GNOME Session..."
 echo "Logs saved to: $LOG_FILE"
-# Start GNOME Session - exec replaces this shell process
-# This ensures the script doesn't exit until gnome-session exits
-exec gnome-session
+
+# Start GNOME Session in background
+gnome-session &
+GNOME_PID=$!
+
+echo "GNOME session started with PID: $GNOME_PID"
+
+# Keep this script alive as long as GNOME is running
+# This ensures GDM doesn't think the session has ended
+while kill -0 $GNOME_PID 2>/dev/null; do
+    sleep 1
+done
+
+echo "GNOME session ended"
+exit 0
