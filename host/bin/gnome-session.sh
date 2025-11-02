@@ -14,5 +14,5 @@ if ! distrobox list | grep -q "$CONTAINER_NAME"; then
 fi
 
 # Launch GNOME inside the container
-# Don't use exec so parent process can manage lifecycle
-distrobox enter "$CONTAINER_NAME" -- /bin/bash ~/.local/bin/start-gnome.sh
+# Use exec to replace this process - we'll only exit when gnome-session exits
+exec distrobox enter "$CONTAINER_NAME" -- /bin/bash ~/.local/bin/start-gnome.sh
