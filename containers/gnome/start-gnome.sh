@@ -20,12 +20,6 @@ if [ -z "$WAYLAND_DISPLAY" ]; then
     exit 1
 fi
 
-# Start D-Bus session bus
-if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
-    eval $(dbus-launch --sh-syntax)
-fi
-
-# Start GNOME Shell as a nested Wayland compositor inside Weston
-# --wayland makes it run as a nested compositor
-# --nested tells it to run inside another Wayland compositor
-exec gnome-shell --wayland --nested
+# Start GNOME Session which handles systemd integration
+# Using dbus-run-session to provide D-Bus
+exec dbus-run-session -- gnome-session
