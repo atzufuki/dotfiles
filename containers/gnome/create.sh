@@ -22,12 +22,11 @@ if [ -n "$WAYLAND_DISPLAY" ]; then
 fi
 
 # Create the distrobox with all necessary bindings
-# Using --init to enable systemd as PID 1
-# This is required for gnome-session to work properly
+# NOT using --init because systemd boot takes 30-60s causing GDM timeout
+# We'll start systemd --user manually instead
 distrobox create \
     --name "$CONTAINER_NAME" \
     --image "$IMAGE_NAME" \
-    --init \
     --additional-flags "\
         --ipc=host \
         --security-opt label=disable \

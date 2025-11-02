@@ -47,23 +47,28 @@ echo "  WAYLAND_DISPLAY=$WAYLAND_DISPLAY"
 echo "  XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR"
 echo ""
 
-# Ensure systemd user session is running
-echo "Checking systemd user session..."
-if ! systemctl --user status >/dev/null 2>&1; then
-    echo "Starting systemd user session with loginctl..."
-    # Trigger systemd user session via loginctl
-    loginctl enable-linger $USER || true
-    sleep 2
-fi
+# Start systemd user session (not PID 1)
+echo "Starting systemd user session..."
+export XDG_RUNTIME_DIR=/run/user/$(id -u)
+export DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus
 
-# Check if systemd user bus is available
-if systemctl --user status >/dev/null 2>&1; then
-    echo "Systemd user session is running"
-else
-    echo "WARNING: Systemd user session not available, GNOME may not work properly"
+# Start systemd --user if not running
+if ! systemctl --user is-system-running &>/dev/null; then
+    /usr/lib/systemd/systemd --user --unit=basic.target &
+    SYSTEMD_PID=$!
+    echo "Systemd user session started (PID: $SYSTEMD_PID)"
+    
+    # Wait for it to be ready (max 5 seconds)
+    for i in {1..10}; do
+        if systemctl --user is-system-running &>/dev/null; then
+            echo "Systemd user session ready"
+            break
+        fi
+        sleep 0.5
+    done
 fi
 
 echo "Starting GNOME Session..."
 echo "Logs saved to: $LOG_FILE"
-# Start GNOME Session with D-Bus
-exec dbus-run-session -- gnome-session
+# Start GNOME Session
+exec gnome-session
