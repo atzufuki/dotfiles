@@ -22,15 +22,16 @@ if [ -n "$WAYLAND_DISPLAY" ]; then
 fi
 
 # Create the distrobox with all necessary bindings
-# Note: NOT using --init to avoid cgroup permission issues
-# systemd user session will be started manually inside the container
-# XDG_RUNTIME_DIR is automatically mounted by distrobox, no need to explicitly mount it
+# Using --init to enable systemd as PID 1
+# This is required for gnome-session to work properly
 distrobox create \
     --name "$CONTAINER_NAME" \
     --image "$IMAGE_NAME" \
+    --init \
     --additional-flags "\
         --ipc=host \
         --security-opt label=disable \
+        --privileged \
         --device /dev/dri \
         --device /dev/snd \
         --env XDG_RUNTIME_DIR=\$XDG_RUNTIME_DIR \
