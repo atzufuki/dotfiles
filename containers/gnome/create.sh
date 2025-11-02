@@ -14,6 +14,13 @@ if distrobox list | grep -q "$CONTAINER_NAME"; then
     exit 1
 fi
 
+# Build additional flags for environment variables
+# Only set WAYLAND_DISPLAY if it's available
+EXTRA_ENV=""
+if [ -n "$WAYLAND_DISPLAY" ]; then
+    EXTRA_ENV="--env WAYLAND_DISPLAY=$WAYLAND_DISPLAY"
+fi
+
 # Create the distrobox with all necessary bindings
 distrobox create \
     --name "$CONTAINER_NAME" \
@@ -26,7 +33,7 @@ distrobox create \
         --device /dev/snd \
         --volume=\$XDG_RUNTIME_DIR:\$XDG_RUNTIME_DIR \
         --env XDG_RUNTIME_DIR=\$XDG_RUNTIME_DIR \
-        --env WAYLAND_DISPLAY=\$WAYLAND_DISPLAY"
+        $EXTRA_ENV"
 
 echo "Container created successfully!"
 echo ""
