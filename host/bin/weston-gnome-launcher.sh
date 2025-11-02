@@ -15,8 +15,10 @@ else
     echo "Running on TTY, using DRM backend"
 fi
 
+# Force use of logind by setting LIBSEAT_BACKEND
+export LIBSEAT_BACKEND=logind
+
 # Use logind launcher for seat management instead of seatd
-# This avoids permission issues
 export XDG_SEAT=seat0
 export XDG_SESSION_TYPE=wayland
 
