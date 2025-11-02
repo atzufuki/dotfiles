@@ -3,13 +3,16 @@
 # This is the entry point called by the display manager
 
 # Enable logging
-LOG_FILE="/tmp/weston-gnome-launcher-$USER.log"
+LOG_DIR="$HOME/dotfiles/logs"
+mkdir -p "$LOG_DIR"
+LOG_FILE="$LOG_DIR/weston-gnome-launcher-$(date +%Y%m%d-%H%M%S).log"
 exec 1> >(tee -a "$LOG_FILE")
 exec 2>&1
 
 echo "=== Session started at $(date) ==="
 echo "Environment:"
 env | sort
+echo ""
 
 set -e
 
