@@ -48,8 +48,15 @@ if [ $timeout -eq 0 ]; then
     exit 1
 fi
 
-# Now launch GNOME session
-/usr/local/bin/gnome-session.sh
+# Now launch GNOME session and wait for it to finish
+/usr/local/bin/gnome-session.sh &
+GNOME_PID=$!
+
+# Wait for GNOME session to finish
+wait $GNOME_PID
 
 # Cleanup when GNOME exits
 kill $WESTON_PID 2>/dev/null || true
+wait $WESTON_PID 2>/dev/null || true
+
+echo "Session ended"

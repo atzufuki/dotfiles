@@ -1,6 +1,6 @@
 #!/bin/bash
 # Host-side launcher for GNOME session in Distrobox
-# This script is called by gamescope to start the containerized GNOME desktop
+# This script is called by weston-gnome-launcher.sh to start the containerized GNOME desktop
 
 set -e
 
@@ -14,4 +14,5 @@ if ! distrobox list | grep -q "$CONTAINER_NAME"; then
 fi
 
 # Launch GNOME inside the container
-exec distrobox enter "$CONTAINER_NAME" -- /bin/bash ~/.local/bin/start-gnome.sh
+# Don't use exec so parent process can manage lifecycle
+distrobox enter "$CONTAINER_NAME" -- /bin/bash ~/.local/bin/start-gnome.sh
