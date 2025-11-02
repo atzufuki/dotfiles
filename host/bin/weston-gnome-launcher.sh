@@ -14,10 +14,10 @@ else
     BACKEND="drm-backend.so"
     echo "Running on TTY, using DRM backend"
     
-    # Try to start seatd if not running
-    if ! pgrep -x seatd >/dev/null; then
-        echo "Starting seatd..."
-        sudo seatd -g video &
+    # Ensure seatd service is running
+    if ! systemctl is-active --quiet seatd; then
+        echo "Starting seatd service..."
+        sudo systemctl start seatd
         sleep 1
     fi
 fi
