@@ -13,14 +13,12 @@ else
     # Running on TTY/GDM, use DRM
     BACKEND="drm-backend.so"
     echo "Running on TTY, using DRM backend"
-    
-    # Ensure seatd service is running
-    if ! systemctl is-active --quiet seatd; then
-        echo "Starting seatd service..."
-        sudo systemctl start seatd
-        sleep 1
-    fi
 fi
+
+# Use logind launcher for seat management instead of seatd
+# This avoids permission issues
+export XDG_SEAT=seat0
+export XDG_SESSION_TYPE=wayland
 
 # Launch weston in fullscreen mode with the GNOME session launcher
 exec weston --backend=$BACKEND --shell=fullscreen-shell.so -- /usr/local/bin/gnome-session.sh
