@@ -33,6 +33,6 @@ if [ -z "$WAYLAND_DISPLAY" ]; then
     exit 1
 fi
 
-# Start GNOME Session
-# gnome-session will start its own D-Bus session if needed
-exec gnome-session
+# Start GNOME Shell in nested mode
+# This allows it to run as a client inside Weston rather than as a compositor
+exec gnome-shell --wayland --nested
