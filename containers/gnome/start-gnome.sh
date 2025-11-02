@@ -14,15 +14,25 @@ if [ -z "$XDG_RUNTIME_DIR" ]; then
     exit 1
 fi
 
-# WAYLAND_DISPLAY will be set by weston, so we don't require it here
-# It gets set after weston starts on the host
+# Wait for Wayland display to be available
+echo "Waiting for Wayland display..."
+timeout=30
+while [ -z "$WAYLAND_DISPLAY" ] && [ $timeout -gt 0 ]; do
+    # Check for any wayland socket in XDG_RUNTIME_DIR
+    if ls "$XDG_RUNTIME_DIR"/wayland-* &>/dev/null; then
+        export WAYLAND_DISPLAY=$(basename "$XDG_RUNTIME_DIR"/wayland-* | head -n1 | cut -d- -f2)
+        echo "Found Wayland display: $WAYLAND_DISPLAY"
+        break
+    fi
+    sleep 0.5
+    timeout=$((timeout - 1))
+done
 
-# Start systemd user session if not already running
-if ! systemctl --user is-system-running &>/dev/null; then
-    echo "Starting systemd user session..."
-    systemctl --user start default.target
+if [ -z "$WAYLAND_DISPLAY" ]; then
+    echo "ERROR: No Wayland display found after 15 seconds"
+    exit 1
 fi
 
-# Start GNOME Session which handles systemd integration
-# Using dbus-run-session to provide D-Bus
-exec dbus-run-session -- gnome-session
+# Start GNOME Session
+# gnome-session will start its own D-Bus session if needed
+exec gnome-session
