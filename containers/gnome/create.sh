@@ -24,6 +24,7 @@ fi
 # Create the distrobox with all necessary bindings
 # Note: NOT using --init to avoid cgroup permission issues
 # systemd user session will be started manually inside the container
+# XDG_RUNTIME_DIR is automatically mounted by distrobox, no need to explicitly mount it
 distrobox create \
     --name "$CONTAINER_NAME" \
     --image "$IMAGE_NAME" \
@@ -32,7 +33,6 @@ distrobox create \
         --security-opt label=disable \
         --device /dev/dri \
         --device /dev/snd \
-        --volume=\$XDG_RUNTIME_DIR:\$XDG_RUNTIME_DIR \
         --env XDG_RUNTIME_DIR=\$XDG_RUNTIME_DIR \
         $EXTRA_ENV"
 
