@@ -1,0 +1,18 @@
+=== GNOME Session start at su 2.11.2025 22.58.37 +0200 ===
+Waiting for Wayland display...
+Found Wayland display: 1
+Container environment ready:
+  WAYLAND_DISPLAY=1
+  XDG_RUNTIME_DIR=/run/user/1000
+
+Starting GNOME Session...
+Logs saved to: /home/atzufuki/dotfiles/logs/start-gnome-20251102-225837.log
+
+** (process:2673): WARNING **: 22:58:37.156: Failed to upload environment to systemd: GDBus.Error:org.freedesktop.DBus.Error.NameHasNoOwner: Name "org.freedesktop.systemd1" does not exist
+
+** (process:2673): WARNING **: 22:58:37.158: Failed to check if unit gnome-session-wayland@gnome.target is active: GDBus.Error:org.freedesktop.DBus.Error.NameHasNoOwner: Name "org.freedesktop.systemd1" does not exist
+
+** (process:2673): WARNING **: 22:58:37.158: Failed to reset failed state of units: GDBus.Error:org.freedesktop.DBus.Error.NameHasNoOwner: Name "org.freedesktop.systemd1" does not exist
+** Message: 22:58:37.158: Starting GNOME session target: gnome-session-wayland@gnome.target
+
+** (process:2673): ERROR **: 22:58:37.159: Failed to start unit gnome-session-wayland@gnome.target: GDBus.Error:org.freedesktop.DBus.Error.NameHasNoOwner: Name "org.freedesktop.systemd1" does not exist
