@@ -1,0 +1,23 @@
+# Containerfile for GNOME desktop environment
+# This image will run inside Distrobox with full GPU and Wayland support
+
+FROM fedora:43
+
+# Install full Fedora Workstation GNOME experience with branding
+# @workstation-product-environment includes:
+# - GNOME Desktop with Fedora branding
+# - Fedora backgrounds and themes
+# - Default Fedora Workstation applications
+RUN dnf install -y \
+    @workstation-product-environment \
+    && dnf clean all
+
+# Set up environment
+ENV XDG_SESSION_TYPE=wayland
+ENV XDG_CURRENT_DESKTOP=GNOME
+
+# Create directory for user scripts
+RUN mkdir -p /usr/local/bin
+
+LABEL maintainer="atzufuki"
+LABEL description="GNOME Desktop Environment for Distrobox"

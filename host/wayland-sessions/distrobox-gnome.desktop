@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=GNOME (Distrobox)
+Comment=GNOME Desktop Environment running in Distrobox container
+Exec=/usr/local/bin/gamescope-gnome-launcher.sh
+Type=Application
+DesktopNames=GNOME
+X-GDM-SessionRegisters=true

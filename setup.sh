@@ -1,73 +1,147 @@
-#!/usr/bin/env bash
+#!/bin/bash
+# Automated setup script for containerized desktop environment on Fedora
+# This script sets up a minimal host with GNOME running in Distrobox
 
-# Dotfiles setup script
-# This script clones the dotfiles repo, manages symlinks, and sets up a Fedora GNOME container using Distrobox.
+set -e
 
-delete_symlinks=false
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONTAINER_NAME="gnome-box"
+IMAGE_NAME="fedora-gnome:43"
 
-# Check for --delete-symlinks argument
-if [[ "$1" == "--delete-symlinks" ]]; then
-    delete_symlinks=true
-    echo "[INFO] Symlinks will be deleted."
-else
-    echo "[INFO] Symlinks will be created or updated."
-fi
+echo "======================================"
+echo "Container Desktop Environment Setup"
+echo "======================================"
+echo ""
 
-echo "[INFO] Cloning dotfiles repository..."
-if [[ -d "$HOME/.dotfiles" ]]; then
-    echo "[INFO] Dotfiles repo exists. Pulling latest changes..."
-    git -C "$HOME/.dotfiles" pull
-else
-    echo "[INFO] Cloning dotfiles repository..."
-    git clone "https://github.com/atzufuki/dotfiles.git" "$HOME/.dotfiles"
-fi
-
-ignore_file="$HOME/.dotfiles/.dotfilesignore"
-
-# Manage symlinks based on ignore file
-echo "[INFO] Found .dotfilesignore, processing files..."
-cd "$HOME/.dotfiles"
-find . -type f | sed 's|^./||' | grep -vFf "$ignore_file" | grep -v "^.dotfilesignore$" | while read -r item; do
-    target="/$item"
-    if $delete_symlinks; then
-        if [[ -L "$target" ]]; then
-            echo "[INFO] Deleting symlink: $target"
-            rm "$target"
-        fi
-    else
-        # Ensure parent directory exists
-        sudo mkdir -p "$(dirname "$target")"
-        echo "[INFO] Creating symlink: $target -> $HOME/.dotfiles/$item"
-        sudo ln -sfn "$HOME/.dotfiles/$item" "$target"
+# Function to check if running as root
+check_root() {
+    if [ "$EUID" -eq 0 ]; then
+        echo "ERROR: Do not run this script as root"
+        echo "Run as regular user with sudo access"
+        exit 1
     fi
-done
+}
 
-# Install Distrobox if missing
-if ! command -v distrobox &> /dev/null; then
-    echo "[INFO] Distrobox not found. Installing via dnf..."
-    sudo dnf install -y distrobox
-    # echo "[INFO] Distrobox not found. Installing via rpm-ostree..."
-#     sudo rpm-ostree install distrobox
-#     echo "[INFO] Please reboot your system, then re-run this script to complete the setup."
-# else
-#     echo "[INFO] Distrobox found. Setting up Fedora GNOME container..."
-    # Create Fedora container with GNOME if missing
-fi
+# Function to install host packages
+install_host_packages() {
+    echo "Installing host system packages..."
+    
+    # Read packages from file
+    if [ ! -f "$SCRIPT_DIR/host/packages.txt" ]; then
+        echo "ERROR: host/packages.txt not found"
+        exit 1
+    fi
+    
+    # Filter out comments and empty lines
+    PACKAGES=$(grep -v '^#' "$SCRIPT_DIR/host/packages.txt" | grep -v '^$' | tr '\n' ' ')
+    
+    echo "Packages to install: $PACKAGES"
+    sudo dnf install -y $PACKAGES
+    
+    echo "Host packages installed successfully"
+}
 
-if ! distrobox list | grep -q fedora-gnome; then
-    echo "[INFO] Creating fedora-gnome container..."
-    distrobox create \
-        --name fedora-gnome \
-        --volume $XDG_RUNTIME_DIR:$XDG_RUNTIME_DIR \
-        --init \
-        --additional-packages "systemd libpam-systemd pipewire-audio-client-libraries" \
-        --image registry.fedoraproject.org/fedora:latest
-else
-    echo "[INFO] fedora-gnome container already exists."
-fi
+# Function to build container image
+build_container_image() {
+    echo "Building GNOME container image..."
+    
+    if [ ! -f "$SCRIPT_DIR/containers/gnome/Containerfile" ]; then
+        echo "ERROR: containers/gnome/Containerfile not found"
+        exit 1
+    fi
+    
+    podman build -t "$IMAGE_NAME" "$SCRIPT_DIR/containers/gnome/"
+    
+    echo "Container image built successfully"
+}
 
-# Enter the container and run the bootstrap script
-echo "[INFO] Entering fedora-gnome container and running bootstrap script..."
-distrobox enter fedora-gnome -- bash ~/.dotfiles/containers/gnome/bootstrap.sh
+# Function to create distrobox container
+create_container() {
+    echo "Creating Distrobox container..."
+    
+    # Check if container already exists
+    if distrobox list | grep -q "$CONTAINER_NAME"; then
+        echo "Container $CONTAINER_NAME already exists, skipping creation"
+        return
+    fi
+    
+    # Run the create script
+    bash "$SCRIPT_DIR/containers/gnome/create.sh"
+    
+    echo "Container created successfully"
+}
 
-echo "[INFO] Dotfiles setup complete!"
+# Function to setup container internals
+setup_container_internals() {
+    echo "Setting up container internals..."
+    
+    # Copy start script into container
+    distrobox enter "$CONTAINER_NAME" -- mkdir -p ~/.local/bin
+    
+    cat "$SCRIPT_DIR/containers/gnome/start-gnome.sh" | \
+        distrobox enter "$CONTAINER_NAME" -- tee ~/.local/bin/start-gnome.sh > /dev/null
+    
+    distrobox enter "$CONTAINER_NAME" -- chmod +x ~/.local/bin/start-gnome.sh
+    
+    echo "Container internals configured"
+}
+
+# Function to install host launchers
+install_launchers() {
+    echo "Installing host-side launchers..."
+    
+    # Copy bin scripts to /usr/local/bin
+    sudo cp "$SCRIPT_DIR/host/bin/gnome-session.sh" /usr/local/bin/
+    sudo cp "$SCRIPT_DIR/host/bin/gamescope-gnome-launcher.sh" /usr/local/bin/
+    
+    sudo chmod +x /usr/local/bin/gnome-session.sh
+    sudo chmod +x /usr/local/bin/gamescope-gnome-launcher.sh
+    
+    # Copy desktop session file
+    sudo mkdir -p /usr/share/wayland-sessions
+    sudo cp "$SCRIPT_DIR/host/wayland-sessions/distrobox-gnome.desktop" \
+        /usr/share/wayland-sessions/
+    
+    echo "Launchers installed successfully"
+}
+
+# Main execution
+main() {
+    check_root
+    
+    echo "Step 1/5: Installing host packages..."
+    install_host_packages
+    echo ""
+    
+    echo "Step 2/5: Building container image..."
+    build_container_image
+    echo ""
+    
+    echo "Step 3/5: Creating Distrobox container..."
+    create_container
+    echo ""
+    
+    echo "Step 4/5: Setting up container internals..."
+    setup_container_internals
+    echo ""
+    
+    echo "Step 5/5: Installing launchers..."
+    install_launchers
+    echo ""
+    
+    echo "======================================"
+    echo "Setup completed successfully!"
+    echo "======================================"
+    echo ""
+    echo "Next steps:"
+    echo "1. Log out of your current session"
+    echo "2. At the login screen, select 'GNOME (Distrobox)'"
+    echo "3. Log in to enjoy your containerized desktop!"
+    echo ""
+    echo "To rebuild the container:"
+    echo "  distrobox rm $CONTAINER_NAME"
+    echo "  bash $SCRIPT_DIR/containers/gnome/create.sh"
+    echo ""
+}
+
+main "$@"
