@@ -6,7 +6,7 @@ podman
 distrobox
 
 # Wayland compositor for session management
-gamescope
+cage
 
 # Audio system
 pipewire

@@ -19,13 +19,13 @@ This project implements a **container-based desktop environment** architecture w
 │                    │                                 │
 │                    ▼                                 │
 │  ┌────────────────────────────────────────────┐    │
-│  │  gamescope-gnome-launcher.sh               │    │
+│  │  cage-gnome-launcher.sh               │    │
 │  │  (Session Entry Point)                     │    │
 │  └─────────────────┬───────────────────────────┘    │
 │                    │                                 │
 │                    ▼                                 │
 │  ┌────────────────────────────────────────────┐    │
-│  │         Gamescope Compositor                │    │
+│  │         Cage Compositor                │    │
 │  │      (Wayland Display Server)               │    │
 │  └─────────────────┬───────────────────────────┘    │
 │                    │                                 │
@@ -77,7 +77,7 @@ This project implements a **container-based desktop environment** architecture w
 **Key Packages:**
 - `podman` - OCI container runtime
 - `distrobox` - User-friendly container management
-- `gamescope` - Micro-compositor for nested sessions
+- `cage` - Micro-compositor for nested sessions
 - `pipewire` + `wireplumber` - Audio system
 - `mesa-dri-drivers` - GPU drivers
 - `xorg-x11-server-Xwayland` - X11 compatibility
@@ -86,13 +86,13 @@ This project implements a **container-based desktop environment** architecture w
 - Boot process
 - Hardware management
 - Container orchestration
-- Display server hosting (gamescope)
+- Display server hosting (cage)
 
-### 2. Gamescope Compositor
+### 2. Cage Compositor
 
 **Purpose:** Provide Wayland display server for containerized desktop
 
-**Why Gamescope?**
+**Why Cage?**
 - Lightweight micro-compositor
 - Designed for nested/containerized sessions
 - Excellent gaming performance (bonus)
@@ -100,7 +100,7 @@ This project implements a **container-based desktop environment** architecture w
 
 **Configuration:**
 ```bash
-gamescope \
+cage \
   --prefer-vk-device /dev/dri/renderD128 \
   --adaptive-sync \
   --rt \
@@ -196,7 +196,7 @@ $XDG_RUNTIME_DIR/$WAYLAND_DISPLAY  → Wayland socket
 ```
 
 **How it works:**
-1. Gamescope creates Wayland socket (e.g., `wayland-0`)
+1. Cage creates Wayland socket (e.g., `wayland-0`)
 2. `$WAYLAND_DISPLAY` env var points to socket
 3. Container shares `$XDG_RUNTIME_DIR`
 4. GNOME Shell connects as Wayland client
@@ -239,7 +239,7 @@ $XDG_RUNTIME_DIR/$WAYLAND_DISPLAY  → Wayland socket
 ### Host System
 ```
 /usr/local/bin/
-├── gamescope-gnome-launcher.sh    # Entry point from login manager
+├── cage-gnome-launcher.sh    # Entry point from login manager
 └── gnome-session.sh                # Distrobox launcher
 
 /usr/share/wayland-sessions/
@@ -261,13 +261,13 @@ $XDG_RUNTIME_DIR/$WAYLAND_DISPLAY  → Wayland socket
 
 1. **User selects "GNOME (Distrobox)" at login screen**
    - Display manager reads `/usr/share/wayland-sessions/distrobox-gnome.desktop`
-   - Executes: `/usr/local/bin/gamescope-gnome-launcher.sh`
+   - Executes: `/usr/local/bin/cage-gnome-launcher.sh`
 
-2. **Gamescope launcher starts compositor**
+2. **Cage launcher starts compositor**
    ```bash
-   exec gamescope -- /usr/local/bin/gnome-session.sh
+   exec cage -- /usr/local/bin/gnome-session.sh
    ```
-   - Gamescope creates Wayland display server
+   - Cage creates Wayland display server
    - Forks child process for session script
 
 3. **Session launcher enters container**
@@ -290,7 +290,7 @@ $XDG_RUNTIME_DIR/$WAYLAND_DISPLAY  → Wayland socket
 1. User logs out from GNOME
 2. `gnome-shell` process exits
 3. Container process terminates
-4. Gamescope compositor exits
+4. Cage compositor exits
 5. Display manager shows login screen
 
 Container persists (not destroyed), ready for next login.

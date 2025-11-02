@@ -92,10 +92,10 @@ install_launchers() {
     
     # Copy bin scripts to /usr/local/bin
     sudo cp "$SCRIPT_DIR/host/bin/gnome-session.sh" /usr/local/bin/
-    sudo cp "$SCRIPT_DIR/host/bin/gamescope-gnome-launcher.sh" /usr/local/bin/
+    sudo cp "$SCRIPT_DIR/host/bin/cage-gnome-launcher.sh" /usr/local/bin/
     
     sudo chmod +x /usr/local/bin/gnome-session.sh
-    sudo chmod +x /usr/local/bin/gamescope-gnome-launcher.sh
+    sudo chmod +x /usr/local/bin/cage-gnome-launcher.sh
     
     # Copy desktop session file
     sudo mkdir -p /usr/share/wayland-sessions

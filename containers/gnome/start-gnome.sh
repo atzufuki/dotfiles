@@ -19,5 +19,5 @@ if [ -z "$WAYLAND_DISPLAY" ]; then
     exit 1
 fi
 
-# Start GNOME Session (not as display server, we connect to host's gamescope)
+# Start GNOME Session (not as display server, we connect to host's compositor)
 exec dbus-run-session -- gnome-session
