@@ -8,6 +8,14 @@ export XDG_CURRENT_DESKTOP=GNOME
 export XDG_SESSION_CLASS=user
 export XDG_SESSION_DESKTOP=gnome
 
+# Force Wayland backend for GTK and Qt applications
+export GDK_BACKEND=wayland
+export QT_QPA_PLATFORM=wayland
+export MOZ_ENABLE_WAYLAND=1
+
+# Disable X11 DISPLAY to prevent fallback to X11
+unset DISPLAY
+
 # Ensure XDG_RUNTIME_DIR is set (should be passed from host)
 if [ -z "$XDG_RUNTIME_DIR" ]; then
     echo "ERROR: XDG_RUNTIME_DIR is not set"
