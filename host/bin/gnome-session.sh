@@ -1,6 +1,6 @@
 #!/bin/bash
 # Host-side launcher for GNOME session in Distrobox
-# This script is called by weston-gnome-launcher.sh to start the containerized GNOME desktop
+# This wrapper stays alive to keep GDM session registered
 
 set -e
 
@@ -14,5 +14,5 @@ if ! distrobox list | grep -q "$CONTAINER_NAME"; then
 fi
 
 # Launch GNOME inside the container
-# Use exec to replace this process - we'll only exit when gnome-session exits
-exec distrobox enter "$CONTAINER_NAME" -- /bin/bash ~/.local/bin/start-gnome.sh
+# DON'T use exec - wrapper must stay alive for GDM session registration
+distrobox enter "$CONTAINER_NAME" -- /bin/bash ~/.local/bin/start-gnome.sh
