@@ -41,6 +41,101 @@ install_host_packages() {
     echo "Host packages installed successfully"
 }
 
+# Function to setup display manager
+setup_display_manager() {
+    echo "======================================"
+    echo "Display Manager Selection"
+    echo "======================================"
+    echo ""
+    echo "Choose how you want to log in:"
+    echo "1) SDDM - Simple Desktop Display Manager (recommended for Distrobox)"
+    echo "2) GDM - GNOME Display Manager (may have issues with Distrobox)"
+    echo "3) Autologin - Automatic login to GNOME (no display manager)"
+    echo ""
+    read -p "Enter your choice (1-3): " DM_CHOICE
+    echo ""
+    
+    case $DM_CHOICE in
+        1)
+            echo "Setting up SDDM..."
+            sudo dnf install -y sddm
+            
+            # Disable other display managers
+            systemctl is-enabled gdm &>/dev/null && sudo systemctl disable gdm
+            
+            # Enable SDDM
+            sudo systemctl enable sddm
+            
+            echo "SDDM configured successfully"
+            echo "Note: You'll need to reboot for the change to take effect"
+            ;;
+        2)
+            echo "Setting up GDM..."
+            sudo dnf install -y gdm
+            
+            # Disable other display managers
+            systemctl is-enabled sddm &>/dev/null && sudo systemctl disable sddm
+            
+            # Enable GDM
+            sudo systemctl enable gdm
+            
+            echo "GDM configured successfully"
+            echo "WARNING: GDM may have session registration issues with Distrobox"
+            echo "Note: You'll need to reboot for the change to take effect"
+            ;;
+        3)
+            echo "Setting up autologin..."
+            
+            # Get current username
+            CURRENT_USER=$(logname 2>/dev/null || echo $SUDO_USER)
+            if [ -z "$CURRENT_USER" ]; then
+                echo "ERROR: Could not determine current user"
+                exit 1
+            fi
+            
+            # Disable display managers
+            systemctl is-enabled gdm &>/dev/null && sudo systemctl disable gdm
+            systemctl is-enabled sddm &>/dev/null && sudo systemctl disable sddm
+            
+            # Create autologin configuration
+            sudo mkdir -p /etc/systemd/system/getty@tty1.service.d
+            sudo tee /etc/systemd/system/getty@tty1.service.d/autologin.conf > /dev/null <<EOF
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty -o '-p -f -- \\u' --noclear --autologin $CURRENT_USER %I \$TERM
+EOF
+            
+            # Create auto-start script for the user
+            mkdir -p "$HOME/.config/systemd/user"
+            cat > "$HOME/.config/systemd/user/gnome-distrobox.service" <<EOF
+[Unit]
+Description=GNOME Desktop in Distrobox
+After=graphical.target
+
+[Service]
+Type=simple
+Environment=XDG_SESSION_TYPE=wayland
+ExecStart=/usr/bin/distrobox-enter -n gnome-box -- /usr/bin/gnome-session
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
+EOF
+            
+            # Enable the service
+            systemctl --user enable gnome-distrobox.service
+            
+            echo "Autologin configured successfully for user: $CURRENT_USER"
+            echo "GNOME will start automatically after login"
+            echo "Note: You'll need to reboot for the change to take effect"
+            ;;
+        *)
+            echo "Invalid choice. Skipping display manager setup."
+            ;;
+    esac
+    echo ""
+}
+
 # Function to build container image
 build_container_image() {
     echo "Building GNOME container image..."
@@ -107,23 +202,27 @@ install_launchers() {
 main() {
     check_root
     
-    echo "Step 1/5: Installing host packages..."
+    echo "Step 1/6: Installing host packages..."
     install_host_packages
     echo ""
     
-    echo "Step 2/5: Building container image..."
+    echo "Step 2/6: Setting up display manager (SDDM)..."
+    setup_display_manager
+    echo ""
+    
+    echo "Step 3/6: Building container image..."
     build_container_image
     echo ""
     
-    echo "Step 3/5: Creating Distrobox container..."
+    echo "Step 4/6: Creating Distrobox container..."
     create_container
     echo ""
     
-    echo "Step 4/5: Setting up container internals..."
+    echo "Step 5/6: Setting up container internals..."
     setup_container_internals
     echo ""
     
-    echo "Step 5/5: Installing launchers..."
+    echo "Step 6/6: Installing launchers..."
     install_launchers
     echo ""
     
@@ -131,10 +230,16 @@ main() {
     echo "Setup completed successfully!"
     echo "======================================"
     echo ""
+    echo "IMPORTANT: Reboot your system for all changes to take effect"
+    echo ""
     echo "Next steps:"
-    echo "1. Log out of your current session"
-    echo "2. At the login screen, select 'GNOME (Distrobox)'"
-    echo "3. Log in to enjoy your containerized desktop!"
+    echo "1. Reboot your system: sudo reboot"
+    if [ "$DM_CHOICE" = "3" ]; then
+        echo "2. GNOME will start automatically after reboot"
+    else
+        echo "2. At the login screen, select 'GNOME (Distrobox)'"
+        echo "3. Log in to enjoy your containerized desktop!"
+    fi
     echo ""
     echo "To rebuild the container:"
     echo "  distrobox rm $CONTAINER_NAME"
