@@ -8,6 +8,9 @@ export XDG_CURRENT_DESKTOP=GNOME
 export XDG_SESSION_CLASS=user
 export XDG_SESSION_DESKTOP=gnome
 
+# Force GNOME Shell to use the full "user" session mode (not "gdm" or "initial-setup")
+# export GNOME_SHELL_SESSION_MODE=user
+
 # Ensure XDG_RUNTIME_DIR is set (should be passed from host)
 if [ -z "$XDG_RUNTIME_DIR" ]; then
     echo "ERROR: XDG_RUNTIME_DIR is not set"
@@ -54,6 +57,6 @@ systemctl --user status >/dev/null 2>&1 && echo "Systemd user session: OK" || ec
 
 echo "Starting GNOME Session..."
 
-# Start GNOME Session without --systemd flag (doesn't exist in Fedora 43)
-# gnome-session will automatically detect and use systemd when available
-exec gnome-session --session=gnome
+# Start GNOME Session the same way as gnome-wayland.desktop does
+# No --session parameter needed - it will use the default GNOME session
+exec gnome-session
