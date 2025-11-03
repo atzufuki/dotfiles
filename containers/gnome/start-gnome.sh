@@ -9,7 +9,7 @@ export XDG_SESSION_CLASS=user
 export XDG_SESSION_DESKTOP=gnome
 
 # Force GNOME Shell to use the full "user" session mode (not "gdm" or "initial-setup")
-# export GNOME_SHELL_SESSION_MODE=user
+export GNOME_SHELL_SESSION_MODE=user
 
 # Ensure XDG_RUNTIME_DIR is set (should be passed from host)
 if [ -z "$XDG_RUNTIME_DIR" ]; then
