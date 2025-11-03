@@ -23,9 +23,87 @@ GDM expects the session launcher process to remain running for the entire durati
 **Why it works in TTY:**
 When launching from TTY, there is no display manager monitoring the process lifecycle. The user remains logged in regardless of which processes are running.
 
-### 2. GNOME Session Requires Systemd
+### Updated Implementation
 
-GNOME session (`gnome-session`) is designed to integrate deeply with systemd user sessions. Without systemd as PID 1 in the container, we see this error:
+Fix start-gnome.sh to use correct gnome-session invocation:
+
+```bash
+echo "Starting GNOME Session..."
+echo "Logs saved to: $LOG_FILE"
+
+# Try systemd target first (cleanest approach)
+if systemctl --user list-unit-files gnome-session-wayland@gnome.target &>/dev/null; then
+    echo "Starting via systemd target..."
+    exec systemctl --user --wait start gnome-session-wayland@gnome.target
+else
+    # Fallback: direct gnome-session invocation
+    echo "Starting gnome-session directly..."
+    exec gnome-session --session=gnome
+fi
+```
+
+### Next Steps for Debugging
+
+1. **Fix gnome-session invocation** (remove --systemd flag):
+   ```bash
+   # Test in container directly
+   distrobox enter gnome-box
+   export WAYLAND_DISPLAY=1
+   export XDG_RUNTIME_DIR=/run/user/1000
+   gnome-session --session=gnome  # Without --systemd flag
+   ```
+
+2. **Investigate failed systemd units**:
+   ```bash
+   distrobox enter gnome-box -- systemctl --user list-units --state=failed
+   distrobox enter gnome-box -- systemctl --user status gnome-session-wayland@gnome.target
+   ```
+
+3. **Check why gnome-session-wayland@gnome.target stays inactive**:
+   ```bash
+   distrobox enter gnome-box -- systemctl --user cat gnome-session-wayland@gnome.target
+   distrobox enter gnome-box -- journalctl --user -u gnome-session-wayland@gnome.target
+   ```
+
+4. **Investigate PAM/keyring issues**:
+   - "gkr-pam: unable to locate daemon control file"
+   - May need gnome-keyring-daemon to be running
+   - Check if gnome-keyring is installed in container
+
+5. **Test direct gnome-session start** (bypass systemd target):
+   - Modify start-gnome.sh to use `exec gnome-session --session=gnome`
+   - See if it starts GNOME successfully
+   - Check if GDM session registration works
+
+### Known Issues to Address
+
+1. **gnome-session --systemd flag doesn't exist**
+   - Solution: Remove the flag, use `gnome-session --session=gnome`
+   
+2. **GDM session never registers**
+   - Possible causes:
+     - gnome-session crashes before registration
+     - Missing DBus session setup
+     - PAM integration broken in container
+     - gnome-keyring-daemon not running
+   
+3. **Container systemd degraded state**
+   - Need to identify which 19 units failed
+   - May be unrelated to GNOME session (e.g., networking, hardware services)
+   
+4. **systemd-userwork processes waiting**
+   - Might be waiting for D-Bus activation
+   - Could indicate service startup deadlock
+
+### Immediate Action Items
+
+**Priority 1:** Fix start-gnome.sh to remove --systemd flag
+
+**Priority 2:** Test direct gnome-session invocation
+
+**Priority 3:** Debug GDM session registration failure
+
+## GNOME Session Requires Systemd
 
 ```
 Trying to run as user instance, but the system has not been booted with systemd.
@@ -55,13 +133,30 @@ The session attempts to start systemd units but fails because:
 **Problem:** No systemd means GNOME session cannot initialize properly.
 
 ### Attempt 4: Creating container with `--init`
-**Status:** Ready to test. GDM should wait for the init process to complete (timeout is usually 90+ seconds).
+**Status:** Tested. Systemd initializes successfully but new issues discovered.
 
-## Proposed Solution: Container with --init
+**Test Results (2025-11-03):**
+- ✅ Container systemd boots successfully (30-60s delay)
+- ✅ Systemd user session reports "OK"
+- ❌ `gnome-session --systemd` flag not recognized (Unknown option --systemd)
+- ❌ GDM reports "Session never registered, failing"
+- ❌ Session returns to login screen after gnome-session crashes
+
+**New Problems Identified:**
+1. `gnome-session` in Fedora 43 doesn't accept `--systemd` flag
+2. GDM session registration failing: `gkr-pam: unable to locate daemon control file`
+3. PAM/GDM integration issues: `pam_gdm: couldn't set environment variable`
+
+## Updated Solution: Fix gnome-session Invocation and GDM Registration
 
 ### Strategy
 
-Use Distrobox `--init` flag to provide systemd as PID 1. GDM has sufficient timeout to wait for container systemd initialization (typically 90 seconds or more), so the 30-60 second boot delay should not cause issues. This needs to be tested to identify if there are other problems beyond the init delay.
+GDM successfully waits for systemd initialization (confirmed by testing). However, two new issues emerged:
+
+1. **gnome-session command line syntax** - The `--systemd` flag doesn't exist in current gnome-session
+2. **GDM session registration** - Session fails to register with GDM even when GNOME starts
+
+Focus shifts to proper gnome-session invocation and ensuring GDM session tracking works correctly.
 
 ### Implementation Plan
 
@@ -159,17 +254,73 @@ exec systemctl --user start gnome-session-wayland@gnome.target
 
 #### 4. Alternative: Use gnome-session directly with exec
 
-If systemd target approach has issues:
+**Update:** The `--systemd` flag doesn't exist in gnome-session (Fedora 43). Use without flags:
 
 ```bash
 # Start GNOME Session
-# With systemd available, gnome-session will properly initialize
-exec gnome-session --session=gnome --systemd
+# With systemd available, gnome-session will automatically detect and use it
+exec gnome-session --session=gnome
 ```
 
-The `--systemd` flag tells gnome-session to use systemd activation.
+Or start via systemd target (preferred method):
 
-### Testing with --init
+```bash
+# Start GNOME via systemd target - let systemd manage the session
+exec systemctl --user --wait start gnome-session-wayland@gnome.target
+```
+
+### Test Results (2025-11-03)
+
+#### What Works ✅
+
+1. **Container systemd initialization**: Containerbootted with --init successfully starts systemd
+   ```
+   Setting up init system...                 [ OK ]
+   Firing up init system...                  [ OK ]
+   Container Setup Complete!
+   ```
+
+2. **Systemd user session**: Properly initialized and reports OK
+   ```
+   Verifying systemd user session...
+   Systemd user session: OK
+   ```
+
+3. **Wayland display detection**: Successfully finds and connects to Weston's Wayland socket
+   ```
+   Found Wayland display: 1
+   ```
+
+#### What Fails ❌
+
+1. **gnome-session --systemd flag**:
+   ```
+   ** (gnome-session:1484): ERROR **: 07:45:15.350: Unknown option --systemd
+   Jäljitys/katkaisupisteansa (core dumped)
+   ```
+   
+   **Root cause**: The `--systemd` flag doesn't exist in current gnome-session version
+
+2. **GDM session registration**:
+   ```
+   gdm-password: pam_gdm: couldn't set environment variable
+   gdm-password: gkr-pam: unable to locate daemon control file
+   gdm[950]: Gdm: GdmDisplay: Session never registered, failing
+   ```
+   
+   **Root cause**: gnome-session crashes before it can register with GDM. Also PAM/keyring integration issues.
+
+3. **Session persistence**: After gnome-session crashes, launcher exits and GDM returns to login screen
+
+#### Container Systemd Status
+
+From screenshots:
+- `systemctl` shows system state as **degraded**
+- `gnome-session-wayland@gnome.target` is **loaded** but **inactive (dead)**
+- Multiple `systemd-userwork` processes waiting
+- 19 units failed (need to identify which ones)
+
+### Updated Implementation
 
 #### Steps to Test
 

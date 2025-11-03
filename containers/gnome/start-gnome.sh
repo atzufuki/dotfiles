@@ -63,6 +63,6 @@ systemctl --user status >/dev/null 2>&1 && echo "Systemd user session: OK" || ec
 echo "Starting GNOME Session..."
 echo "Logs saved to: $LOG_FILE"
 
-# Start GNOME Session with systemd integration
-# Use --systemd flag to enable systemd session management
-exec gnome-session --session=gnome --systemd
+# Start GNOME Session without --systemd flag (doesn't exist in Fedora 43)
+# gnome-session will automatically detect and use systemd when available
+exec gnome-session --session=gnome
