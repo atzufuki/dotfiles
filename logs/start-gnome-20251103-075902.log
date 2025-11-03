@@ -1,0 +1,12 @@
+=== GNOME Session start at ma 3.11.2025 07.59.02 +0000 ===
+Waiting for Wayland display...
+Found Wayland display: 1
+Container environment ready:
+  WAYLAND_DISPLAY=1
+  XDG_RUNTIME_DIR=/run/user/1000
+
+Verifying systemd user session...
+Systemd user session: OK
+Starting GNOME Session...
+Logs saved to: /home/atzufuki/dotfiles/logs/start-gnome-20251103-075902.log
+** Message: 07:59:03.139: Starting GNOME session target: gnome-session-wayland@gnome.target
