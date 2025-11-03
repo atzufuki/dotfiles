@@ -15,12 +15,8 @@ RUN dnf install -y \
     gnome-system-monitor \
     gnome-tweaks \
     gnome-extensions-app \
-    # GNOME settings daemons (needed by gnome-session)
     gnome-settings-daemon \
-    # Desktop background and themes
     gnome-backgrounds \
-    fedora-backgrounds-gnome \
-    # Basic utilities
     mesa-dri-drivers \
     mesa-vulkan-drivers \
     && dnf clean all
