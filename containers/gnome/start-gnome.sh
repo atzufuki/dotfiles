@@ -41,7 +41,8 @@ echo ""
 # With --init flag, systemd is running as PID 1
 # Verify systemd user session is ready
 echo "Verifying systemd user session..."
-export XDG_RUNTIME_DIR=/run/user/$(id -u)
+
+# Set up D-Bus session bus (systemd creates it in XDG_RUNTIME_DIR)
 export DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus
 
 if ! systemctl --user is-system-running &>/dev/null; then
