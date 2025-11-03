@@ -25,7 +25,7 @@ This project implements a **container-based desktop environment** architecture w
 │                    │                                 │
 │                    ▼                                 │
 │  ┌────────────────────────────────────────────┐    │
-│  │         Cage Compositor                │    │
+│  │         Weston Compositor                   │    │
 │  │      (Wayland Display Server)               │    │
 │  └─────────────────┬───────────────────────────┘    │
 │                    │                                 │
@@ -41,6 +41,7 @@ This project implements a **container-based desktop environment** architecture w
 │  │                                              │    │
 │  │  ╔══════════════════════════════════════╗  │    │
 │  │  ║   Podman Container: gnome-box        ║  │    │
+│  │  ║         (with systemd)               ║  │    │
 │  │  ║                                       ║  │    │
 │  │  ║  ┌────────────────────────────────┐  ║  │    │
 │  │  ║  │  start-gnome.sh                 │  ║  │    │
@@ -88,22 +89,21 @@ This project implements a **container-based desktop environment** architecture w
 - Container orchestration
 - Display server hosting (weston)
 
-### 2. Cage Compositor
+### 2. Weston Compositor
 
 **Purpose:** Provide Wayland display server for containerized desktop
 
-**Why Cage?**
-- Lightweight micro-compositor
-- Designed for nested/containerized sessions
-- Excellent gaming performance (bonus)
-- Supports adaptive sync, HDR (future)
+**Why Weston?**
+- Reference Wayland compositor implementation
+- Stable and well-maintained
+- Supports various backends (DRM, X11, etc.)
+- Good performance for nested sessions
 
 **Configuration:**
 ```bash
 weston \
-  --prefer-vk-device /dev/dri/renderD128 \
-  --adaptive-sync \
-  --rt \
+  --backend=drm-backend.so \
+  --shell=kiosk-shell.so \
   -- /usr/local/bin/gnome-session.sh
 ```
 
@@ -114,6 +114,7 @@ weston \
 **Creation Flags:**
 ```bash
 distrobox create -n gnome-box -i fedora-gnome:43 \
+  --init \                                 # Enable systemd as PID 1
   --additional-flags "
     --ipc=host                           # Shared IPC namespace
     --security-opt label=disable         # Disable SELinux confinement
@@ -125,6 +126,11 @@ distrobox create -n gnome-box -i fedora-gnome:43 \
   "
 ```
 
+**Critical Requirements:**
+- `--init` flag enables systemd as PID 1 (required for GNOME)
+- First boot takes 30-60s for systemd initialization
+- Subsequent logins are fast (<5s) as container persists
+
 **Critical Bindings:**
 - `/dev/dri` → GPU acceleration (OpenGL, Vulkan)
 - `/dev/snd` → Direct audio device access
@@ -135,8 +141,13 @@ distrobox create -n gnome-box -i fedora-gnome:43 \
 
 **Running inside container as:**
 ```bash
-dbus-run-session -- gnome-shell --display-server
+gnome-session --session=gnome
 ```
+
+**Key Points:**
+- GNOME requires systemd for proper session management
+- `gnome-session` automatically detects and uses systemd when available as PID 1
+- Do NOT use `--systemd` flag (doesn't exist in Fedora 43, causes crash)
 
 **Environment Variables:**
 ```bash
@@ -196,7 +207,7 @@ $XDG_RUNTIME_DIR/$WAYLAND_DISPLAY  → Wayland socket
 ```
 
 **How it works:**
-1. Cage creates Wayland socket (e.g., `wayland-0`)
+1. Weston creates Wayland socket (e.g., `wayland-0`)
 2. `$WAYLAND_DISPLAY` env var points to socket
 3. Container shares `$XDG_RUNTIME_DIR`
 4. GNOME Shell connects as Wayland client
@@ -263,11 +274,11 @@ $XDG_RUNTIME_DIR/$WAYLAND_DISPLAY  → Wayland socket
    - Display manager reads `/usr/share/wayland-sessions/distrobox-gnome.desktop`
    - Executes: `/usr/local/bin/weston-gnome-launcher.sh`
 
-2. **Cage launcher starts compositor**
+2. **Weston launcher starts compositor**
    ```bash
    exec weston -- /usr/local/bin/gnome-session.sh
    ```
-   - Cage creates Wayland display server
+   - Weston creates Wayland display server
    - Forks child process for session script
 
 3. **Session launcher enters container**
@@ -279,18 +290,19 @@ $XDG_RUNTIME_DIR/$WAYLAND_DISPLAY  → Wayland socket
 
 4. **GNOME starts inside container**
    ```bash
-   exec dbus-run-session -- gnome-shell --display-server
+   exec gnome-session --session=gnome
    ```
-   - D-Bus session bus started
+   - systemd user session already running (via --init)
+   - gnome-session automatically detects systemd
    - GNOME Shell connects to Wayland socket
    - Desktop environment fully running
 
 ### Logout Process
 
 1. User logs out from GNOME
-2. `gnome-shell` process exits
+2. `gnome-session` process exits
 3. Container process terminates
-4. Cage compositor exits
+4. Weston compositor exits
 5. Display manager shows login screen
 
 Container persists (not destroyed), ready for next login.

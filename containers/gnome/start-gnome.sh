@@ -2,15 +2,6 @@
 # Start GNOME desktop environment inside Distrobox container
 # This script should be placed in ~/.local/bin/start-gnome.sh inside the container
 
-# Enable logging
-LOG_DIR="$HOME/dotfiles/logs"
-mkdir -p "$LOG_DIR"
-LOG_FILE="$LOG_DIR/start-gnome-$(date +%Y%m%d-%H%M%S).log"
-exec 1> >(tee -a "$LOG_FILE")
-exec 2>&1
-
-echo "=== GNOME Session start at $(date) ==="
-
 # Set up Wayland session environment
 export XDG_SESSION_TYPE=wayland
 export XDG_CURRENT_DESKTOP=GNOME
@@ -61,7 +52,6 @@ fi
 systemctl --user status >/dev/null 2>&1 && echo "Systemd user session: OK" || echo "Systemd user session: DEGRADED"
 
 echo "Starting GNOME Session..."
-echo "Logs saved to: $LOG_FILE"
 
 # Start GNOME Session without --systemd flag (doesn't exist in Fedora 43)
 # gnome-session will automatically detect and use systemd when available

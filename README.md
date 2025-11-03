@@ -15,13 +15,13 @@ Run a **minimal, immutable-style Fedora host** with desktop environments isolate
 
 ```
 Fedora Minimal Host
-└── Cage (Wayland compositor)
-    └── Distrobox Container
-        └── GNOME/KDE/Steam Desktop
+└── Weston (Wayland compositor)
+    └── Distrobox Container (with systemd)
+        └── GNOME Desktop
 ```
 
 **Host packages:** podman, distrobox, weston, pipewire, mesa drivers  
-**Container:** Full desktop environment with GPU and audio access
+**Container:** Full GNOME desktop with systemd, GPU and audio access
 
 ## Quick Start
 
@@ -56,7 +56,8 @@ curl -sL https://raw.githubusercontent.com/atzufuki/dotfiles/main/setup.sh | bas
 - Mesa GPU drivers + Xwayland
 
 ### GNOME Container (gnome-box)
-- GNOME Shell + Session
+- Created with `--init` flag for systemd support
+- GNOME Shell + Session with systemd integration
 - GNOME Terminal, Nautilus, Control Center
 - Full Wayland support with GPU acceleration
 
@@ -113,7 +114,7 @@ dotfiles/
 
 1. **Host boots** → Minimal Fedora with no DE installed
 2. **User logs in** → Login manager launches `weston-gnome-launcher.sh`
-3. **Cage starts** → Minimal Wayland compositor provides display server
+3. **Weston starts** → Wayland compositor provides display server
 4. **Distrobox enters container** → Runs `gnome-box` container
 5. **GNOME Shell launches** → Full desktop inside container
 6. **GPU/Audio shared** → `/dev/dri`, PipeWire sockets bind-mounted
@@ -163,7 +164,7 @@ pactl info
 
 - [GitHub Issue #3](https://github.com/atzufuki/dotfiles/issues/3) - Original proposal
 - [Distrobox Documentation](https://distrobox.it/)
-- [Cage Wayland Compositor](https://github.com/weston-kiosk/weston)
+- [Weston Wayland Compositor](https://gitlab.freedesktop.org/wayland/weston)
 - [Running GNOME/KDE on Distrobox](https://distrobox.it/posts/run_latest_gnome_kde_on_distrobox/)
 
 ## License
