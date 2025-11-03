@@ -108,8 +108,9 @@ EOF
             # Create .bash_profile to auto-start GNOME on TTY1
             cat >> "$HOME/.bash_profile" <<'EOF'
 
-# Auto-start GNOME on TTY1
-if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
+# Auto-start GNOME on TTY1 (only once)
+if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ] && [ -z "$GNOME_STARTED" ]; then
+    export GNOME_STARTED=1
     exec distrobox-enter -n gnome-box -- /usr/bin/gnome-session
 fi
 EOF
