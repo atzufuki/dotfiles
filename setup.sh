@@ -185,9 +185,16 @@ install_launchers() {
     sudo cp "$SCRIPT_DIR/host/bin/distrobox-gnome-session.sh" /usr/local/bin/
     sudo chmod +x /usr/local/bin/distrobox-gnome-session.sh
     
-    # Install gnome-shell wrapper (redirects to container)
-    sudo cp "$SCRIPT_DIR/host/bin/gnome-shell" /usr/local/bin/
-    sudo chmod +x /usr/local/bin/gnome-shell
+    # Replace /usr/bin/gnome-shell with wrapper that redirects to container
+    # Backup original if it exists
+    if [ -f /usr/bin/gnome-shell ] && [ ! -f /usr/bin/gnome-shell.real ]; then
+        echo "Backing up original gnome-shell to gnome-shell.real"
+        sudo mv /usr/bin/gnome-shell /usr/bin/gnome-shell.real
+    fi
+    
+    # Install gnome-shell wrapper
+    sudo cp "$SCRIPT_DIR/host/bin/gnome-shell" /usr/bin/gnome-shell
+    sudo chmod +x /usr/bin/gnome-shell
     
     # Install /tmp/.X11-unix fix for XWayland
     sudo mkdir -p /etc/profile.d
