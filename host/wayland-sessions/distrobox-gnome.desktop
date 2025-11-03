@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=GNOME (Distrobox)
+Comment=GNOME Desktop Environment in Container
+Exec=/usr/local/bin/distrobox-gnome-session.sh
+Type=Application
+DesktopNames=GNOME
+X-GDM-SessionRegisters=true

@@ -1,0 +1,32 @@
+# Host system packages for minimal containerized desktop environment
+# These packages provide the foundation for running desktop environments in containers
+
+# Container runtime and management
+podman
+distrobox
+
+# GNOME session management (host-side for PAM registration)
+gnome-session
+gnome-session-wayland-session
+
+# Wayland compositor for session management (backup option)
+weston
+
+# Audio system
+pipewire
+pipewire-alsa
+pipewire-pulseaudio
+pipewire-jack-audio-connection-kit
+wireplumber
+
+# Seat management for multi-user support
+seatd
+
+# Graphics and GPU support
+mesa-dri-drivers
+mesa-vulkan-drivers
+xorg-x11-server-Xwayland
+
+# Additional utilities
+git
+curl

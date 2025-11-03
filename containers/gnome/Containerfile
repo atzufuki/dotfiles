@@ -1,0 +1,29 @@
+# Containerfile for GNOME desktop environment
+# This image provides gnome-shell and apps, while host provides gnome-session
+# This hybrid approach allows proper PAM/systemd session registration
+
+FROM fedora:43
+
+# Install GNOME Shell and applications WITHOUT gnome-session
+# gnome-session runs on host for proper display manager integration
+RUN dnf install -y \
+    gnome-shell \
+    gnome-control-center \
+    gnome-terminal \
+    nautilus \
+    gnome-software \
+    gnome-system-monitor \
+    gnome-tweaks \
+    gnome-extensions-app \
+    gnome-settings-daemon \
+    gnome-backgrounds \
+    mesa-dri-drivers \
+    mesa-vulkan-drivers \
+    && dnf clean all
+
+# Set up environment
+ENV XDG_SESSION_TYPE=wayland
+ENV XDG_CURRENT_DESKTOP=GNOME
+
+LABEL maintainer="atzufuki"
+LABEL description="GNOME Shell and Apps for Distrobox (session on host)"

@@ -1,0 +1,8 @@
+#!/bin/bash
+# Wrapper that redirects gnome-shell execution to container
+# This allows host's gnome-session to launch containerized gnome-shell
+
+CONTAINER_NAME="gnome-box"
+
+# Pass all arguments to containerized gnome-shell
+exec distrobox-enter -n "$CONTAINER_NAME" -- /usr/bin/gnome-shell "$@"
