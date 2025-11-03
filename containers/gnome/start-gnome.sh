@@ -47,20 +47,22 @@ echo "  WAYLAND_DISPLAY=$WAYLAND_DISPLAY"
 echo "  XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR"
 echo ""
 
+# With --init flag, systemd is running as PID 1
+# Verify systemd user session is ready
+echo "Verifying systemd user session..."
+export XDG_RUNTIME_DIR=/run/user/$(id -u)
+export DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus
+
+if ! systemctl --user is-system-running &>/dev/null; then
+    echo "Systemd user session not ready, waiting..."
+    systemctl --user is-system-running --wait || true
+fi
+
+systemctl --user status >/dev/null 2>&1 && echo "Systemd user session: OK" || echo "Systemd user session: DEGRADED"
+
 echo "Starting GNOME Session..."
 echo "Logs saved to: $LOG_FILE"
 
-# Start GNOME Session in background
-gnome-session &
-GNOME_PID=$!
-
-echo "GNOME session started with PID: $GNOME_PID"
-
-# Keep this script alive as long as GNOME is running
-# This ensures GDM doesn't think the session has ended
-while kill -0 $GNOME_PID 2>/dev/null; do
-    sleep 1
-done
-
-echo "GNOME session ended"
-exit 0
+# Start GNOME Session with systemd integration
+# Use --systemd flag to enable systemd session management
+exec gnome-session --session=gnome --systemd

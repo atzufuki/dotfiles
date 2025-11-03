@@ -1,7 +1,0 @@
-[Desktop Entry]
-Name=Distrobox GNOME (systemd)
-Comment=GNOME Desktop Environment running in Distrobox container with systemd session
-Exec=/usr/bin/systemd-run --user --scope --collect --unit=gnome-distrobox-session /usr/local/bin/weston-gnome-launcher.sh
-Type=Application
-DesktopNames=GNOME
-X-GDM-SessionRegisters=true
