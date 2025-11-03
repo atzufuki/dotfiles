@@ -22,9 +22,11 @@ export LIBSEAT_BACKEND=logind
 export XDG_SEAT=seat0
 export XDG_SESSION_TYPE=wayland
 
-# Force software rendering (pixman) for VMware compatibility
-# This avoids EGL/GL issues in virtual machines
-export WESTON_RENDERER=pixman
+# Rendering backend selection
+# NOTE: GNOME Shell requires GL rendering for full functionality (extensions, effects)
+# Software rendering (pixman) causes GNOME to use fallback mode with minimal UI
+# Uncomment the line below only if you have GL/EGL issues:
+# export WESTON_RENDERER=pixman
 
 # Start Weston in background
 weston --backend=$BACKEND &
