@@ -103,8 +103,6 @@ install_launchers() {
     sudo mkdir -p /usr/share/wayland-sessions
     sudo cp "$SCRIPT_DIR/host/wayland-sessions/distrobox-gnome.desktop" \
         /usr/share/wayland-sessions/
-    sudo cp "$SCRIPT_DIR/host/wayland-sessions/distrobox-gnome-systemd.desktop" \
-        /usr/share/wayland-sessions/
     
     echo "Launchers installed successfully"
 }
