@@ -1,5 +1,5 @@
 #!/bin/bash
-# Direct GNOME launcher - launches containerized GNOME as display server
+# Weston kiosk launcher for containerized GNOME desktop
 # This is the entry point called by the display manager
 
 set -e
@@ -11,8 +11,9 @@ export LIBSEAT_BACKEND=logind
 export XDG_SEAT=seat0
 export XDG_SESSION_TYPE=wayland
 
-echo "Launching GNOME session directly (no nested compositor)"
+echo "Launching Weston in kiosk mode with GNOME"
 echo "Session started at $(date)"
 
-# Launch GNOME session directly - it will act as the display server
-exec /usr/local/bin/gnome-session.sh
+# Launch Weston in kiosk mode - it will hide itself and only show GNOME
+# The --shell=kiosk-shell.so makes Weston fullscreen the client (GNOME)
+exec weston --shell=kiosk-shell.so -- /usr/local/bin/gnome-session.sh
