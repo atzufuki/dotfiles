@@ -105,28 +105,17 @@ ExecStart=
 ExecStart=-/sbin/agetty -o '-p -f -- \\u' --noclear --autologin $CURRENT_USER %I \$TERM
 EOF
             
-            # Create auto-start script for the user
-            mkdir -p "$HOME/.config/systemd/user"
-            cat > "$HOME/.config/systemd/user/gnome-distrobox.service" <<EOF
-[Unit]
-Description=GNOME Desktop in Distrobox
-After=graphical.target
+            # Create .bash_profile to auto-start GNOME on TTY1
+            cat >> "$HOME/.bash_profile" <<'EOF'
 
-[Service]
-Type=simple
-Environment=XDG_SESSION_TYPE=wayland
-ExecStart=/usr/bin/distrobox-enter -n gnome-box -- /usr/bin/gnome-session
-Restart=on-failure
-
-[Install]
-WantedBy=default.target
+# Auto-start GNOME on TTY1
+if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
+    exec distrobox-enter -n gnome-box -- /usr/bin/gnome-session
+fi
 EOF
             
-            # Enable the service
-            systemctl --user enable gnome-distrobox.service
-            
             echo "Autologin configured successfully for user: $CURRENT_USER"
-            echo "GNOME will start automatically after login"
+            echo "GNOME will start automatically on TTY1 after login"
             echo "Note: You'll need to reboot for the change to take effect"
             ;;
         *)
