@@ -23,10 +23,12 @@ fi
 
 # Create the distrobox with all necessary bindings
 # Using --init to provide systemd as PID 1 for proper GNOME session support
+# --additional-packages ensures systemd is properly configured
 distrobox create \
     --name "$CONTAINER_NAME" \
     --image "$IMAGE_NAME" \
     --init \
+    --additional-packages "systemd" \
     --additional-flags "\
         --ipc=host \
         --security-opt label=disable \
