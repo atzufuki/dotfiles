@@ -180,6 +180,11 @@ install_launchers() {
     sudo cp "$SCRIPT_DIR/host/wayland-sessions/distrobox-gnome.desktop" \
         /usr/share/wayland-sessions/
     
+    # Install launcher scripts
+    sudo mkdir -p /usr/local/bin
+    sudo cp "$SCRIPT_DIR/host/bin/distrobox-gnome-session.sh" /usr/local/bin/
+    sudo chmod +x /usr/local/bin/distrobox-gnome-session.sh
+    
     # Install /tmp/.X11-unix fix for XWayland
     sudo mkdir -p /etc/profile.d
     sudo cp "$SCRIPT_DIR/etc/profile.d/fix_tmp.sh" /etc/profile.d/
@@ -204,15 +209,11 @@ main() {
     build_container_image
     echo ""
     
-    echo "Step 4/6: Creating Distrobox container..."
+    echo "Step 4/5: Creating Distrobox container..."
     create_container
     echo ""
     
-    echo "Step 5/6: Setting up container internals..."
-    setup_container_internals
-    echo ""
-    
-    echo "Step 6/6: Installing launchers..."
+    echo "Step 5/5: Installing launchers..."
     install_launchers
     echo ""
     

@@ -1,5 +1,6 @@
 #!/bin/bash
 # Script to create GNOME Distrobox container with proper bindings
+# Container provides gnome-shell and apps, host provides gnome-session
 
 set -e
 
@@ -22,13 +23,10 @@ if [ -n "$WAYLAND_DISPLAY" ]; then
 fi
 
 # Create the distrobox with all necessary bindings
-# Using --init to provide systemd as PID 1 for proper GNOME session support
-# --additional-packages ensures systemd is properly configured
+# NO --init flag since systemd session runs on host
 distrobox create \
     --name "$CONTAINER_NAME" \
     --image "$IMAGE_NAME" \
-    --init \
-    --additional-packages "systemd" \
     --additional-flags "\
         --ipc=host \
         --security-opt label=disable \
@@ -40,7 +38,6 @@ distrobox create \
 
 echo "Container created successfully!"
 echo ""
-echo "Next steps:"
-echo "1. Enter the container: distrobox enter $CONTAINER_NAME"
-echo "2. Copy start-gnome.sh to ~/.local/bin/ inside the container"
-echo "3. Make it executable: chmod +x ~/.local/bin/start-gnome.sh"
+echo "Note: This container uses host's gnome-session for proper PAM registration"
+echo "Container provides: gnome-shell, apps, settings daemons"
+echo "Host provides: gnome-session, PAM, systemd user session"

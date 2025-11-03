@@ -5,8 +5,11 @@
 podman
 distrobox
 
-# Wayland compositor for session management
-# Using weston as the host compositor for nested GNOME Shell
+# GNOME session management (host-side for PAM registration)
+gnome-session
+gnome-session-wayland-session
+
+# Wayland compositor for session management (backup option)
 weston
 
 # Audio system
