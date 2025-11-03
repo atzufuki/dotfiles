@@ -90,17 +90,15 @@ setup_container_internals() {
 install_launchers() {
     echo "Installing host-side launchers..."
     
-    # Copy bin scripts to /usr/local/bin
-    sudo cp "$SCRIPT_DIR/host/bin/gnome-session.sh" /usr/local/bin/
-    sudo cp "$SCRIPT_DIR/host/bin/weston-gnome-launcher.sh" /usr/local/bin/
-    
-    sudo chmod +x /usr/local/bin/gnome-session.sh
-    sudo chmod +x /usr/local/bin/weston-gnome-launcher.sh
-    
     # Copy desktop session file
     sudo mkdir -p /usr/share/wayland-sessions
     sudo cp "$SCRIPT_DIR/host/wayland-sessions/distrobox-gnome.desktop" \
         /usr/share/wayland-sessions/
+    
+    # Install /tmp/.X11-unix fix for XWayland
+    sudo mkdir -p /etc/profile.d
+    sudo cp "$SCRIPT_DIR/etc/profile.d/fix_tmp.sh" /etc/profile.d/
+    sudo chmod +x /etc/profile.d/fix_tmp.sh
     
     echo "Launchers installed successfully"
 }

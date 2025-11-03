@@ -1,7 +1,7 @@
 [Desktop Entry]
-Name=GNOME (Distrobox Container)
-Comment=GNOME Desktop Environment running in Distrobox container via Weston compositor
-Exec=/usr/local/bin/weston-gnome-launcher.sh
+Name=GNOME (Distrobox)
+Comment=GNOME Desktop Environment in Container
+Exec=/usr/bin/distrobox-enter -n gnome-box -- /usr/bin/gnome-session
 Type=Application
 DesktopNames=GNOME
 X-GDM-SessionRegisters=true
