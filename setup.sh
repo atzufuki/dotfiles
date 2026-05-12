@@ -1,73 +1,90 @@
 #!/usr/bin/env bash
 
 # Dotfiles setup script
-# This script clones the dotfiles repo, manages symlinks, and sets up a Fedora GNOME container using Distrobox.
+# This script clones the dotfiles repo and manages symlinks.
 
-delete_symlinks=false
+usage() {
+    echo "Usage: $0 [install|uninstall]"
+}
 
-# Check for --delete-symlinks argument
-if [[ "$1" == "--delete-symlinks" ]]; then
-    delete_symlinks=true
-    echo "[INFO] Symlinks will be deleted."
-else
-    echo "[INFO] Symlinks will be created or updated."
+if [[ $# -gt 1 ]]; then
+    usage
+    exit 1
 fi
 
-echo "[INFO] Cloning dotfiles repository..."
-if [[ -d "$HOME/.dotfiles" ]]; then
-    echo "[INFO] Dotfiles repo exists. Pulling latest changes..."
-    git -C "$HOME/.dotfiles" pull
-else
-    echo "[INFO] Cloning dotfiles repository..."
-    git clone "https://github.com/atzufuki/dotfiles.git" "$HOME/.dotfiles"
+command="${1:-install}"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo_dir="$script_dir"
+
+if [[ $# -eq 0 ]]; then
+    repo_dir="$HOME/.dotfiles"
 fi
 
-ignore_file="$HOME/.dotfiles/.dotfilesignore"
+case "$command" in
+    install)
+        echo "[INFO] Installing dotfiles."
+        ;;
+    uninstall)
+        echo "[INFO] Uninstalling dotfiles."
+        ;;
+    *)
+        usage
+        exit 1
+        ;;
+esac
 
-# Manage symlinks based on ignore file
+if [[ "$command" == "install" && $# -eq 0 ]]; then
+    if [[ -d "$HOME/.dotfiles" ]]; then
+        echo "[INFO] Dotfiles repo exists. Pulling latest changes..."
+        git -C "$HOME/.dotfiles" pull
+    else
+        echo "[INFO] Cloning dotfiles repository..."
+        git clone "https://github.com/atzufuki/dotfiles.git" "$HOME/.dotfiles"
+    fi
+fi
+
+ignore_file="$repo_dir/.dotfilesignore"
+
+if [[ ! -d "$repo_dir" ]]; then
+    echo "[ERROR] Dotfiles repo not found: $repo_dir"
+    exit 1
+fi
+
+if [[ ! -f "$ignore_file" ]]; then
+    echo "[ERROR] Ignore file not found: $ignore_file"
+    exit 1
+fi
+
 echo "[INFO] Found .dotfilesignore, processing files..."
-cd "$HOME/.dotfiles"
+cd "$repo_dir" || exit 1
+
+if [[ "$command" == "uninstall" ]]; then
+    echo "[INFO] Disabling scarlett-stereo.service..."
+    systemctl --user disable --now scarlett-stereo.service || true
+fi
+
 find . -type f | sed 's|^./||' | grep -vFf "$ignore_file" | grep -v "^.dotfilesignore$" | while read -r item; do
     target="/$item"
-    if $delete_symlinks; then
+    if [[ "$command" == "uninstall" ]]; then
         if [[ -L "$target" ]]; then
             echo "[INFO] Deleting symlink: $target"
-            rm "$target"
+            sudo rm "$target"
         fi
     else
         # Ensure parent directory exists
         sudo mkdir -p "$(dirname "$target")"
-        echo "[INFO] Creating symlink: $target -> $HOME/.dotfiles/$item"
-        sudo ln -sfn "$HOME/.dotfiles/$item" "$target"
+        echo "[INFO] Creating symlink: $target -> $repo_dir/$item"
+        sudo ln -sfn "$repo_dir/$item" "$target"
     fi
 done
 
-# Install Distrobox if missing
-if ! command -v distrobox &> /dev/null; then
-    echo "[INFO] Distrobox not found. Installing via dnf..."
-    sudo dnf install -y distrobox
-    # echo "[INFO] Distrobox not found. Installing via rpm-ostree..."
-#     sudo rpm-ostree install distrobox
-#     echo "[INFO] Please reboot your system, then re-run this script to complete the setup."
-# else
-#     echo "[INFO] Distrobox found. Setting up Fedora GNOME container..."
-    # Create Fedora container with GNOME if missing
-fi
-
-if ! distrobox list | grep -q fedora-gnome; then
-    echo "[INFO] Creating fedora-gnome container..."
-    distrobox create \
-        --name fedora-gnome \
-        --volume $XDG_RUNTIME_DIR:$XDG_RUNTIME_DIR \
-        --init \
-        --additional-packages "systemd libpam-systemd pipewire-audio-client-libraries" \
-        --image registry.fedoraproject.org/fedora:latest
+if [[ "$command" == "install" ]]; then
+    echo "[INFO] Enabling scarlett-stereo.service..."
+    systemctl --user daemon-reload
+    systemctl --user enable --now scarlett-stereo.service
 else
-    echo "[INFO] fedora-gnome container already exists."
+    echo "[INFO] Reloading user systemd state..."
+    systemctl --user daemon-reload
 fi
-
-# Enter the container and run the bootstrap script
-echo "[INFO] Entering fedora-gnome container and running bootstrap script..."
-distrobox enter fedora-gnome -- bash ~/.dotfiles/containers/gnome/bootstrap.sh
 
 echo "[INFO] Dotfiles setup complete!"

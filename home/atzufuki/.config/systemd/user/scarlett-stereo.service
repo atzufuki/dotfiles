@@ -1,0 +1,12 @@
+[Unit]
+Description=Scarlett 16i16 stereo PipeWire loopback
+After=pipewire.service pipewire-pulse.service wireplumber.service
+Wants=pipewire.service pipewire-pulse.service wireplumber.service
+
+[Service]
+ExecStart=/usr/bin/pw-loopback --name=ScarlettStereo --capture-props=media.class=Audio/Sink node.name=ScarlettStereo audio.position=[FL FR] --playback-props=target.object=alsa_output.usb-Focusrite_Scarlett_16i16_4th_Gen_S6KPJZ34B027B9-00.multichannel-output node.target=alsa_output.usb-Focusrite_Scarlett_16i16_4th_Gen_S6KPJZ34B027B9-00.multichannel-output audio.position=[FL FR]
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target

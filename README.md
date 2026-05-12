@@ -1,16 +1,29 @@
-# Minimal host setup with DE containerization for Fedora
+# atzufuki dotfiles
 
-This dotfiles setup allows you to reserve the integrity of the immutable host system by running desktop environments via containers.
+Personal dotfiles managed with symlinks.
 
-Apply to fresh install of Fedora directly with the following script:
+## Install
+
+Fetch the latest version from GitHub and install it:
 
 ```bash
 curl -sL https://raw.githubusercontent.com/atzufuki/dotfiles/main/setup.sh | bash
 ```
 
-Wait for the system packages gettings installed, then reboot and run the script again to complete the setup.
+Use the current checkout without fetching from GitHub:
 
-Finally logout and log back in using your preferred containerized desktop environment.
+```bash
+./setup.sh install
+```
 
-## Reference
-- [Run latest GNOME/KDE on Distrobox](https://distrobox.it/posts/run_latest_gnome_kde_on_distrobox/)
+## Uninstall
+
+Remove the symlinks and disable the user service:
+
+```bash
+./setup.sh uninstall
+```
+
+## Features
+
+- Scarlett stereo PipeWire loopback user service
