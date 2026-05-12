@@ -1,0 +1,12 @@
+{
+  "theme": "Hyper Term Black",
+  "project_panel": {
+    "dock": "left"
+  },
+  "terminal": {
+    "dock": "right"
+  },
+  "agent": {
+    "dock": "right"
+  }
+}

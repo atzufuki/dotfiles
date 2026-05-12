@@ -1,4 +1,4 @@
 .git/
-scripts/
+.packages/
 setup.sh
 README.md

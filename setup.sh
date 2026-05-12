@@ -58,6 +58,20 @@ fi
 echo "[INFO] Found .dotfilesignore, processing files..."
 cd "$repo_dir" || exit 1
 
+if [[ -d "$repo_dir/.packages" ]]; then
+    shopt -s nullglob
+    package_scripts=("$repo_dir"/.packages/*.sh)
+    shopt -u nullglob
+
+    if [[ ${#package_scripts[@]} -gt 0 ]]; then
+        echo "[INFO] Running package scripts..."
+        for package_script in "${package_scripts[@]}"; do
+            echo "[INFO] Running package script: $package_script $command"
+            bash "$package_script" "$command" || exit 1
+        done
+    fi
+fi
+
 if [[ "$command" == "uninstall" ]]; then
     echo "[INFO] Disabling scarlett-stereo.service..."
     systemctl --user disable --now scarlett-stereo.service || true
