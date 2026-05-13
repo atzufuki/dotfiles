@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 
 # Dotfiles command script.
-# This script manages package scripts, symlinks, and user services.
+# This script manages scripts and dotfile symlinks.
 
 usage() {
     cat <<'EOF'
 Usage: dotfiles <command>
 
 Commands:
-  install    Install packages, symlink dotfiles, and enable services
-  uninstall  Remove dotfiles symlinks and disable services
+  install    Run install scripts and symlink dotfiles
+  uninstall  Remove dotfiles symlinks and run uninstall scripts
   dry-run    Preview install actions without changing files
   status     Check symlinks, package state, and managed services
   help       Show this help
@@ -33,6 +33,8 @@ while [[ -L "$source_path" ]]; do
 done
 script_dir="$(cd "$(dirname "$source_path")" && pwd)"
 repo_dir="$script_dir"
+ignore_file="$repo_dir/.dotfilesignore"
+scripts_dir="$repo_dir/scripts"
 
 case "$command" in
     install)
@@ -57,8 +59,6 @@ case "$command" in
         ;;
 esac
 
-ignore_file="$repo_dir/.dotfilesignore"
-
 if [[ ! -d "$repo_dir" ]]; then
     echo "[ERROR] Dotfiles repo not found: $repo_dir"
     exit 1
@@ -72,35 +72,32 @@ fi
 echo "[INFO] Found .dotfilesignore, processing files..."
 cd "$repo_dir" || exit 1
 
-is_secret_path() {
-    case "$1" in
-        *.env|*.env.*|*.pem|*.key|*.crt|*.cert|*credentials*.json|*secret*|*secrets*)
-            return 0
-            ;;
-        *)
-            return 1
-            ;;
-    esac
-}
-
-check_secrets() {
-    local found=0
+managed_files() {
+    local item
 
     while IFS= read -r item; do
-        if is_secret_path "$item"; then
-            echo "[ERROR] Refusing to manage possible secret: $item"
-            found=1
-        fi
-    done < <(find . -type f | sed 's|^./||' | grep -v '^.git/')
-
-    if [[ "$found" -ne 0 ]]; then
-        echo "[ERROR] Move secrets outside the repo or ignore them before continuing."
-        return 1
-    fi
+        [[ "$item" == ".dotfilesignore" ]] && continue
+        is_ignored_file "$item" && continue
+        echo "$item"
+    done < <(find . -type f | sed 's|^./||')
 }
 
-managed_files() {
-    find . -type f | sed 's|^./||' | grep -vFf "$ignore_file" | grep -v "^.dotfilesignore$"
+is_ignored_file() {
+    local item="$1"
+    local pattern
+
+    while IFS= read -r pattern; do
+        [[ -z "$pattern" || "$pattern" == \#* ]] && continue
+        if [[ "$pattern" == *"*"* || "$pattern" == *"?"* || "$pattern" == *"["* ]]; then
+            [[ "$item" == $pattern ]] && return 0
+        elif [[ "$pattern" == */ ]]; then
+            [[ "$item" == "$pattern"* ]] && return 0
+        elif [[ "$item" == "$pattern" ]]; then
+            return 0
+        fi
+    done < "$ignore_file"
+
+    return 1
 }
 
 target_for() {
@@ -219,25 +216,25 @@ cleanup_legacy_removed_files() {
     done < <(legacy_removed_files)
 }
 
-run_package_scripts() {
-    local package_command="$1"
+run_scripts() {
+    local script_command="$1"
 
-    if [[ ! -d "$repo_dir/.packages" ]]; then
+    if [[ ! -d "$scripts_dir" ]]; then
         return 0
     fi
 
     shopt -s nullglob
-    package_scripts=("$repo_dir"/.packages/*.sh)
+    scripts=("$scripts_dir"/*.sh)
     shopt -u nullglob
 
-    if [[ ${#package_scripts[@]} -eq 0 ]]; then
+    if [[ ${#scripts[@]} -eq 0 ]]; then
         return 0
     fi
 
-    echo "[INFO] Running package scripts..."
-    for package_script in "${package_scripts[@]}"; do
-        echo "[INFO] Running package script: $package_script $package_command"
-        bash "$package_script" "$package_command" || exit 1
+    echo "[INFO] Running scripts..."
+    for script in "${scripts[@]}"; do
+        echo "[INFO] Running script: $script $script_command"
+        bash "$script" "$script_command" || exit 1
     done
 }
 
@@ -299,24 +296,15 @@ preview_link() {
     fi
 }
 
-if [[ "$command" != "uninstall" ]]; then
-    check_secrets || exit 1
+if [[ "$command" != "install" ]]; then
+    run_scripts "$command"
 fi
-
-if [[ -d "$repo_dir/.packages" ]]; then
-    run_package_scripts "$command"
-fi
-
 cleanup_legacy_removed_files "$command"
 
 if [[ "$command" == "status" ]]; then
     while read -r item; do
         print_link_status "$item"
     done < <(managed_files)
-
-    echo "[INFO] systemd user service status: scarlett-stereo.service"
-    systemctl --user is-enabled scarlett-stereo.service || true
-    systemctl --user is-active scarlett-stereo.service || true
     exit 0
 fi
 
@@ -324,14 +312,7 @@ if [[ "$command" == "dry-run" ]]; then
     while read -r item; do
         preview_link "$item"
     done < <(managed_files)
-
-    echo "[DRY-RUN] Would reload and enable scarlett-stereo.service"
     exit 0
-fi
-
-if [[ "$command" == "uninstall" ]]; then
-    echo "[INFO] Disabling scarlett-stereo.service..."
-    systemctl --user disable --now scarlett-stereo.service || true
 fi
 
 managed_files | while read -r item; do
@@ -361,13 +342,11 @@ managed_files | while read -r item; do
     fi
 done
 
+echo "[INFO] Reloading user systemd state..."
+systemctl --user daemon-reload
+
 if [[ "$command" == "install" ]]; then
-    echo "[INFO] Enabling scarlett-stereo.service..."
-    systemctl --user daemon-reload
-    systemctl --user enable --now scarlett-stereo.service
-else
-    echo "[INFO] Reloading user systemd state..."
-    systemctl --user daemon-reload
+    run_scripts "$command"
 fi
 
 echo "[INFO] Dotfiles command complete!"
