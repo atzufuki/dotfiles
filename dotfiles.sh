@@ -214,6 +214,98 @@ available_scripts() {
     shopt -u nullglob
 }
 
+script_dependencies() {
+    local script_name="$1"
+    local script="$scripts_dir/$script_name.sh"
+    local line
+    local deps
+    local dep
+
+    [[ -f "$script" ]] || return 0
+
+    while IFS= read -r line; do
+        [[ "$line" == "# dotfiles-depends:"* ]] || continue
+        deps="${line#\# dotfiles-depends:}"
+        for dep in $deps; do
+            [[ -n "$dep" ]] && echo "$dep"
+        done
+    done < "$script"
+}
+
+reverse_items() {
+    local -a items=("$@")
+    local index
+
+    for ((index = ${#items[@]} - 1; index >= 0; index--)); do
+        echo "${items[$index]}"
+    done
+}
+
+order_script_visit() {
+    local script_name="$1"
+    local dep
+
+    case "${script_visit_state[$script_name]:-}" in
+        visiting)
+            echo "[ERROR] Circular script dependency detected at script: $script_name"
+            exit 1
+            ;;
+        visited)
+            return 0
+            ;;
+    esac
+
+    if [[ ! -f "$scripts_dir/$script_name.sh" ]]; then
+        echo "[ERROR] Script dependency is missing: $script_name"
+        exit 1
+    fi
+
+    script_visit_state[$script_name]="visiting"
+    while IFS= read -r dep; do
+        [[ -n "$dep" ]] || continue
+        if ! [[ -f "$scripts_dir/$dep.sh" ]]; then
+            if [[ "$script_dependency_strict" == "true" ]]; then
+                echo "[ERROR] Script $script_name depends on missing script $dep."
+                exit 1
+            fi
+            continue
+        fi
+
+        if ! list_contains "$dep" "${script_order_scope[@]}"; then
+            if [[ "$script_dependency_strict" == "true" ]]; then
+                echo "[ERROR] Active script $script_name depends on inactive script $dep."
+                exit 1
+            fi
+            continue
+        fi
+
+        order_script_visit "$dep"
+    done < <(script_dependencies "$script_name")
+
+    script_visit_state[$script_name]="visited"
+    ordered_scripts+=("$script_name")
+}
+
+order_scripts() {
+    local strict="$1"
+    local script_name
+    shift
+
+    declare -g -a ordered_scripts
+    declare -g -a script_order_scope
+    declare -g -A script_visit_state
+    declare -g script_dependency_strict
+
+    ordered_scripts=()
+    script_order_scope=("$@")
+    script_dependency_strict="$strict"
+    script_visit_state=()
+
+    for script_name in "$@"; do
+        order_script_visit "$script_name"
+    done
+}
+
 available_modules() {
     local module_dir
     local entry
@@ -381,51 +473,95 @@ run_scripts() {
     local script
     local script_name
     local action
+    local -a all_scripts=()
+    local -a active_scripts=()
+    local -a inactive_scripts=()
+    local -a ordered_active_scripts=()
+    local -a ordered_inactive_scripts=()
+    local -a ordered_all_scripts=()
 
     if [[ ! -d "$scripts_dir" ]]; then
         return 0
     fi
 
     shopt -s nullglob
-    scripts=("$scripts_dir"/*.sh)
+    for script in "$scripts_dir"/*.sh; do
+        script_name="$(basename "$script" .sh)"
+        all_scripts+=("$script_name")
+        if list_contains "$script_name" "${ACTIVE_SCRIPTS[@]}"; then
+            active_scripts+=("$script_name")
+        else
+            inactive_scripts+=("$script_name")
+        fi
+    done
     shopt -u nullglob
 
-    if [[ ${#scripts[@]} -eq 0 ]]; then
+    if [[ ${#all_scripts[@]} -eq 0 ]]; then
         return 0
     fi
 
     echo "[INFO] Running scripts..."
-    for script in "${scripts[@]}"; do
-        script_name="$(basename "$script" .sh)"
+    case "$script_command" in
+        apply)
+            order_scripts true "${active_scripts[@]}"
+            ordered_active_scripts=("${ordered_scripts[@]}")
+            order_scripts false "${inactive_scripts[@]}"
+            ordered_inactive_scripts=("${ordered_scripts[@]}")
+            mapfile -t ordered_inactive_scripts < <(reverse_items "${ordered_inactive_scripts[@]}")
 
-        case "$script_command" in
-            apply)
-                if list_contains "$script_name" "${ACTIVE_SCRIPTS[@]}"; then
-                    action="apply"
-                else
-                    action="purge"
-                fi
-                ;;
-            dry-run)
-                if list_contains "$script_name" "${ACTIVE_SCRIPTS[@]}"; then
-                    action="dry-run"
-                else
-                    echo "[DRY-RUN] Would purge disabled script: $script_name"
-                    continue
-                fi
-                ;;
-            purge|status)
-                action="$script_command"
-                ;;
-            *)
-                echo "[ERROR] Unsupported script command: $script_command"
-                exit 1
-                ;;
-        esac
+            for script_name in "${ordered_inactive_scripts[@]}"; do
+                script="$scripts_dir/$script_name.sh"
+                echo "[INFO] Running script: $script purge"
+                DOTFILES_REPO_DIR="$repo_dir" bash "$script" purge || exit 1
+            done
+            for script_name in "${ordered_active_scripts[@]}"; do
+                script="$scripts_dir/$script_name.sh"
+                echo "[INFO] Running script: $script apply"
+                DOTFILES_REPO_DIR="$repo_dir" bash "$script" apply || exit 1
+            done
+            ;;
+        dry-run)
+            order_scripts true "${active_scripts[@]}"
+            ordered_active_scripts=("${ordered_scripts[@]}")
+            order_scripts false "${inactive_scripts[@]}"
+            ordered_inactive_scripts=("${ordered_scripts[@]}")
+            mapfile -t ordered_inactive_scripts < <(reverse_items "${ordered_inactive_scripts[@]}")
 
-        echo "[INFO] Running script: $script $action"
-        bash "$script" "$action" || exit 1
-    done
+            for script_name in "${ordered_inactive_scripts[@]}"; do
+                echo "[DRY-RUN] Would purge disabled script: $script_name"
+            done
+            for script_name in "${ordered_active_scripts[@]}"; do
+                script="$scripts_dir/$script_name.sh"
+                echo "[INFO] Running script: $script dry-run"
+                DOTFILES_REPO_DIR="$repo_dir" bash "$script" dry-run || exit 1
+            done
+            ;;
+        purge)
+            order_scripts true "${all_scripts[@]}"
+            ordered_all_scripts=("${ordered_scripts[@]}")
+            mapfile -t ordered_all_scripts < <(reverse_items "${ordered_all_scripts[@]}")
+
+            for script_name in "${ordered_all_scripts[@]}"; do
+                script="$scripts_dir/$script_name.sh"
+                echo "[INFO] Running script: $script purge"
+                DOTFILES_REPO_DIR="$repo_dir" bash "$script" purge || exit 1
+            done
+            ;;
+        status)
+            order_scripts true "${all_scripts[@]}"
+            ordered_all_scripts=("${ordered_scripts[@]}")
+
+            for script_name in "${ordered_all_scripts[@]}"; do
+                script="$scripts_dir/$script_name.sh"
+                echo "[INFO] Running script: $script status"
+                DOTFILES_REPO_DIR="$repo_dir" bash "$script" status || exit 1
+            done
+            ;;
+        *)
+            echo "[ERROR] Unsupported script command: $script_command"
+            exit 1
+            ;;
+    esac
 }
 
 print_link_status() {

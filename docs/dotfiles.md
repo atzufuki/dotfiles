@@ -43,7 +43,7 @@ dot status
 
 ## Scripts
 
-Feature scripts live in `scripts/`. They are run alphabetically and are not symlinked because `scripts/` is ignored by `.dotfilesignore`.
+Feature scripts live in `scripts/`. They are not symlinked because `scripts/` is ignored by `.dotfilesignore`.
 
 Each script receives one command:
 
@@ -53,6 +53,16 @@ scripts/name.sh purge
 scripts/name.sh dry-run
 scripts/name.sh status
 ```
+
+Scripts can declare dependencies with metadata comments:
+
+```bash
+# dotfiles-depends: gh
+```
+
+Active scripts are run in dependency order for `apply` and `dry-run`. `status` runs all scripts in dependency order, and `purge` runs all scripts in reverse dependency order.
+
+If an active script depends on an inactive or missing script, `dot apply` and `dot dry-run` fail with an error.
 
 ## Config
 

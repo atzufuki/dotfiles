@@ -22,5 +22,6 @@ dot apply
 
 - Scarlett stereo PipeWire loopback user service
 - GitHub CLI user-level installer
+- GitHub SSH key and repository push setup
 - Zed editor setup with Hyper Term Black theme
 - OpenCode user-level installer
