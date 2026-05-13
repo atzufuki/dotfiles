@@ -8,30 +8,40 @@ Fetch the latest version from GitHub and install it:
 
 ```bash
 curl -sL https://raw.githubusercontent.com/atzufuki/dotfiles/main/setup.sh | bash
+dotfiles install
 ```
 
-Use the current checkout without fetching from GitHub:
+Bootstrap clones or updates the repo at `$HOME/.dotfiles` and installs command symlinks:
 
 ```bash
-./setup.sh install
+dotfiles
+dot
+```
+
+Both `dotfiles` and `dot` show help when run without arguments or with `--help`.
+
+Use the current checkout directly:
+
+```bash
+./dotfiles.sh install
 ```
 
 Remove the symlinks and disable the user service:
 
 ```bash
-./setup.sh uninstall
+dotfiles uninstall
 ```
 
 Preview install actions without changing files, services, or packages:
 
 ```bash
-./setup.sh dry-run
+dotfiles dry-run
 ```
 
 Check symlinks, package state, and managed user services:
 
 ```bash
-./setup.sh status
+dotfiles status
 ```
 
 ## Packages
@@ -78,7 +88,7 @@ Layout defaults:
 
 ## Secret Guard
 
-`setup.sh install`, `setup.sh dry-run`, and `setup.sh status` scan repo file paths for likely secrets before continuing.
+`dotfiles install`, `dotfiles dry-run`, and `dotfiles status` scan repo file paths for likely secrets before continuing.
 
 Blocked path patterns include `.env`, `.pem`, `.key`, `.crt`, `.cert`, `credentials*.json`, and names containing `secret` or `secrets`.
 

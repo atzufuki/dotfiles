@@ -1,5 +1,6 @@
 .git/
 .packages/
 setup.sh
+dotfiles.sh
 README.md
 tasks.md
