@@ -2,15 +2,15 @@
 
 set -euo pipefail
 
-command="${1:-install}"
+command="${1:-apply}"
 service="scarlett-stereo.service"
 
 case "$command" in
-    install)
+    apply)
         echo "[INFO] Enabling $service."
         systemctl --user enable --now "$service"
         ;;
-    uninstall)
+    purge)
         echo "[INFO] Disabling $service."
         systemctl --user disable --now "$service" || true
         ;;
@@ -23,7 +23,7 @@ case "$command" in
         systemctl --user is-active "$service" || true
         ;;
     *)
-        echo "Usage: $0 [install|uninstall|dry-run|status]"
+        echo "Usage: $0 [apply|purge|dry-run|status]"
         exit 1
         ;;
 esac

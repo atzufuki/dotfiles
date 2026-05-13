@@ -14,4 +14,6 @@ scripts/
 *secrets*
 setup.sh
 dotfiles.sh
+dotfiles.conf
+dotfiles.defaults.conf
 README.md

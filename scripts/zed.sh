@@ -2,10 +2,10 @@
 
 set -euo pipefail
 
-command="${1:-install}"
+command="${1:-apply}"
 
 case "$command" in
-    install)
+    apply)
         if command -v zed >/dev/null 2>&1 || [[ -x "$HOME/.local/bin/zed" ]]; then
             echo "[INFO] Zed already installed, skipping."
             exit 0
@@ -13,7 +13,7 @@ case "$command" in
 
         curl -f https://zed.dev/install.sh | sh
         ;;
-    uninstall)
+    purge)
         echo "[INFO] Removing Zed user installation."
         rm -f "$HOME/.local/bin/zed"
         rm -rf "$HOME/.local/zed.app"
@@ -35,7 +35,7 @@ case "$command" in
         fi
         ;;
     *)
-        echo "Usage: $0 [install|uninstall|dry-run|status]"
+        echo "Usage: $0 [apply|purge|dry-run|status]"
         exit 1
         ;;
 esac

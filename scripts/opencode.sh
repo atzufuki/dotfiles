@@ -2,10 +2,10 @@
 
 set -euo pipefail
 
-command="${1:-install}"
+command="${1:-apply}"
 
 case "$command" in
-    install)
+    apply)
         if command -v opencode >/dev/null 2>&1 || [[ -x "$HOME/.opencode/bin/opencode" ]]; then
             echo "[INFO] OpenCode already installed, skipping."
             exit 0
@@ -13,7 +13,7 @@ case "$command" in
 
         curl -fsSL https://opencode.ai/install | bash -s -- --no-modify-path
         ;;
-    uninstall)
+    purge)
         echo "[INFO] Removing OpenCode user installation."
         rm -rf "$HOME/.opencode"
         ;;
@@ -34,7 +34,7 @@ case "$command" in
         fi
         ;;
     *)
-        echo "Usage: $0 [install|uninstall|dry-run|status]"
+        echo "Usage: $0 [apply|purge|dry-run|status]"
         exit 1
         ;;
 esac

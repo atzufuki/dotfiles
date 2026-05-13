@@ -5,7 +5,7 @@
 
 usage() {
     cat <<'EOF'
-Usage: setup.sh [--private] [--help]
+Usage: setup.sh [--external] [--help]
 
 Clones or updates https://github.com/atzufuki/dotfiles.git at $HOME/.dotfiles
 and installs these commands through $HOME/.local/bin:
@@ -13,19 +13,19 @@ and installs these commands through $HOME/.local/bin:
   dotfiles
   dot
 
-Run `dotfiles install` after setup to install the dotfiles.
+Run `dot apply` after setup to apply the dotfiles.
 
 Options:
-  --private  Authenticate with GitHub in browser and clone private modules
+  --external  Authenticate with GitHub in browser and clone external modules
 EOF
 }
 
-install_private_modules=0
+install_external_modules=0
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --private)
-            install_private_modules=1
+        --external)
+            install_external_modules=1
             ;;
         --help|-h|help)
             usage
@@ -43,9 +43,7 @@ repo_url="https://github.com/atzufuki/dotfiles.git"
 repo_dir="$HOME/.dotfiles"
 bin_dir="$HOME/.local/bin"
 dotfiles_script="$repo_dir/dotfiles.sh"
-private_modules=(
-    "atzufuki/myprivatemodule:myprivatemodule"
-)
+defaults_file="$repo_dir/dotfiles.defaults.conf"
 
 ensure_gh() {
     if [[ -x "$HOME/.local/bin/gh" && ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
@@ -96,37 +94,56 @@ ensure_gh_auth() {
     gh auth setup-git --hostname github.com >/dev/null
 }
 
-install_private_module_repos() {
+install_external_module_repos() {
     local module
     local repo
     local name
     local module_dir
 
+    if [[ ! -f "$defaults_file" ]]; then
+        echo "[ERROR] Dotfiles defaults not found: $defaults_file"
+        exit 1
+    fi
+
+    source "$defaults_file"
     ensure_gh_auth
     mkdir -p "$repo_dir/modules"
 
-    for module in "${private_modules[@]}"; do
+    while IFS= read -r module; do
         repo="${module%%:*}"
         name="${module#*:}"
         module_dir="$repo_dir/modules/$name"
 
         if [[ -d "$module_dir/.git" ]]; then
-            echo "[INFO] Private module exists. Pulling latest changes: $name"
+            echo "[INFO] External module exists. Pulling latest changes: $name"
             git -C "$module_dir" pull
         elif [[ -e "$module_dir" ]]; then
             if [[ -d "$module_dir" && -f "$module_dir/.keep" && -z "$(find "$module_dir" -mindepth 1 ! -name .keep -print -quit)" ]]; then
                 rm "$module_dir/.keep"
                 rmdir "$module_dir"
-                echo "[INFO] Cloning private module: $repo"
+                echo "[INFO] Cloning external module: $repo"
                 gh repo clone "$repo" "$module_dir"
             else
                 echo "[ERROR] $module_dir exists but is not a git repo."
                 exit 1
             fi
         else
-            echo "[INFO] Cloning private module: $repo"
+            echo "[INFO] Cloning external module: $repo"
             gh repo clone "$repo" "$module_dir"
         fi
+    done < <(external_modules)
+}
+
+external_modules() {
+    local entry
+
+    for entry in "${EXTERNAL_MODULE_REPOS[@]}"; do
+        [[ "$entry" == *=* ]] || {
+            echo "[ERROR] Invalid external module entry: $entry" >&2
+            exit 1
+        }
+
+        echo "${entry#*=}:${entry%%=*}"
     done
 }
 
@@ -141,8 +158,8 @@ else
     git clone "$repo_url" "$repo_dir"
 fi
 
-if [[ "$install_private_modules" -eq 1 ]]; then
-    install_private_module_repos
+if [[ "$install_external_modules" -eq 1 ]]; then
+    install_external_module_repos
 fi
 
 if [[ ! -f "$dotfiles_script" ]]; then
@@ -161,4 +178,4 @@ if [[ ":$PATH:" != *":$bin_dir:"* ]]; then
     echo "[WARN] $bin_dir is not in PATH for this shell. Open a new shell or add it to PATH."
 fi
 
-echo "[INFO] Bootstrap complete. Run: dotfiles install"
+echo "[INFO] Bootstrap complete. Run: dot apply"
