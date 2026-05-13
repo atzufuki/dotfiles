@@ -2,6 +2,7 @@
 .gitignore
 *.keep
 modules/
+docs/
 scripts/
 .env
 .env.*
