@@ -96,6 +96,14 @@ ensure_proton_wine() {
     fi
 }
 
+runtime_install_dir() {
+    echo "$wineprefix/drive_c/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App/$runtime_version"
+}
+
+is_runtime_installed() {
+    [[ -d "$(runtime_install_dir)" ]]
+}
+
 download_runtime() {
     mkdir -p "$download_dir"
 
@@ -113,6 +121,12 @@ case "$command" in
         resolve_paths
         ensure_proton_prefix
         ensure_proton_wine
+
+        if is_runtime_installed; then
+            echo "[INFO] .NET Desktop Runtime $runtime_version already installed in s&box Editor Proton prefix, skipping."
+            exit 0
+        fi
+
         download_runtime
 
         echo "[INFO] Installing .NET Desktop Runtime $runtime_version into s&box Editor Proton prefix."
@@ -125,8 +139,12 @@ case "$command" in
         resolve_paths
         echo "[DRY-RUN] Would use Proton Wine: $proton_wine"
         echo "[DRY-RUN] Would use WINEPREFIX: $wineprefix"
-        echo "[DRY-RUN] Would download installer: $runtime_url"
-        echo "[DRY-RUN] Would run installer: $runtime_path"
+        if is_runtime_installed; then
+            echo "[DRY-RUN] .NET Desktop Runtime $runtime_version is already installed: $(runtime_install_dir)"
+        else
+            echo "[DRY-RUN] Would download installer: $runtime_url"
+            echo "[DRY-RUN] Would run installer: $runtime_path"
+        fi
         ;;
     status)
         resolve_paths
@@ -146,6 +164,12 @@ case "$command" in
             echo "[OK] .NET Desktop Runtime installer downloaded: $runtime_path"
         else
             echo "[MISSING] .NET Desktop Runtime installer not downloaded: $runtime_path"
+        fi
+
+        if is_runtime_installed; then
+            echo "[OK] .NET Desktop Runtime installed: $(runtime_install_dir)"
+        else
+            echo "[MISSING] .NET Desktop Runtime not installed: $(runtime_install_dir)"
         fi
         ;;
     *)
