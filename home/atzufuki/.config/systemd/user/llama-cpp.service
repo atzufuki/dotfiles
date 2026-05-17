@@ -1,0 +1,11 @@
+[Unit]
+Description=llama.cpp local OpenAI-compatible server
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/env bash -lc 'exec "$HOME/.local/bin/llama-cpp-server-start"'
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

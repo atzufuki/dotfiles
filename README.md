@@ -23,5 +23,6 @@ dot apply
 - Scarlett stereo PipeWire loopback user service
 - GitHub CLI user-level installer
 - GitHub SSH key and repository push setup
+- llama.cpp local AI runtime setup with AMD-friendly Vulkan backend
 - Zed editor setup with Hyper Term Black theme
 - OpenCode user-level installer

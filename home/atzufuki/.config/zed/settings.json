@@ -6,6 +6,51 @@
   "terminal": {
     "dock": "right"
   },
+  "language_models": {
+    "openai_compatible": {
+      "llama_cpp": {
+        "api_url": "http://127.0.0.1:8080/v1",
+        "available_models": [
+          {
+            "name": "qwen3-coder-30b-a3b-instruct-q3_k_m",
+            "display_name": "Qwen3 Coder 30B A3B Instruct Q3_K_M (local)",
+            "max_tokens": 32768,
+            "max_output_tokens": 8192,
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": false,
+              "prompt_cache_key": false
+            }
+          },
+          {
+            "name": "gemma-4-26b-a4b-it-ud-iq4_xs",
+            "display_name": "Gemma 4 26B A4B IT UD-IQ4_XS (local)",
+            "max_tokens": 32768,
+            "max_output_tokens": 8192,
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": false,
+              "prompt_cache_key": false
+            }
+          },
+          {
+            "name": "qwen2.5-coder-7b-instruct-q4_k_m",
+            "display_name": "Qwen2.5 Coder 7B Instruct Q4_K_M (local)",
+            "max_tokens": 32768,
+            "max_output_tokens": 8192,
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": false,
+              "prompt_cache_key": false
+            }
+          }
+        ]
+      }
+    }
+  },
   "agent": {
     "sidebar_side": "right",
     "dock": "right"
