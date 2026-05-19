@@ -505,15 +505,7 @@ run_scripts() {
         apply)
             order_scripts true "${active_scripts[@]}"
             ordered_active_scripts=("${ordered_scripts[@]}")
-            order_scripts false "${inactive_scripts[@]}"
-            ordered_inactive_scripts=("${ordered_scripts[@]}")
-            mapfile -t ordered_inactive_scripts < <(reverse_items "${ordered_inactive_scripts[@]}")
 
-            for script_name in "${ordered_inactive_scripts[@]}"; do
-                script="$scripts_dir/$script_name.sh"
-                echo "[INFO] Running script: $script purge"
-                DOTFILES_REPO_DIR="$repo_dir" bash "$script" purge || exit 1
-            done
             for script_name in "${ordered_active_scripts[@]}"; do
                 script="$scripts_dir/$script_name.sh"
                 echo "[INFO] Running script: $script apply"
@@ -523,13 +515,7 @@ run_scripts() {
         dry-run)
             order_scripts true "${active_scripts[@]}"
             ordered_active_scripts=("${ordered_scripts[@]}")
-            order_scripts false "${inactive_scripts[@]}"
-            ordered_inactive_scripts=("${ordered_scripts[@]}")
-            mapfile -t ordered_inactive_scripts < <(reverse_items "${ordered_inactive_scripts[@]}")
 
-            for script_name in "${ordered_inactive_scripts[@]}"; do
-                echo "[DRY-RUN] Would purge disabled script: $script_name"
-            done
             for script_name in "${ordered_active_scripts[@]}"; do
                 script="$scripts_dir/$script_name.sh"
                 echo "[INFO] Running script: $script dry-run"
@@ -537,11 +523,11 @@ run_scripts() {
             done
             ;;
         purge)
-            order_scripts true "${all_scripts[@]}"
-            ordered_all_scripts=("${ordered_scripts[@]}")
-            mapfile -t ordered_all_scripts < <(reverse_items "${ordered_all_scripts[@]}")
+            order_scripts true "${active_scripts[@]}"
+            ordered_active_scripts=("${ordered_scripts[@]}")
+            mapfile -t ordered_active_scripts < <(reverse_items "${ordered_active_scripts[@]}")
 
-            for script_name in "${ordered_all_scripts[@]}"; do
+            for script_name in "${ordered_active_scripts[@]}"; do
                 script="$scripts_dir/$script_name.sh"
                 echo "[INFO] Running script: $script purge"
                 DOTFILES_REPO_DIR="$repo_dir" bash "$script" purge || exit 1
