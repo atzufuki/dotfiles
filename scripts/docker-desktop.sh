@@ -8,6 +8,8 @@ package_name="docker-desktop"
 rpm_url="${DOCKER_DESKTOP_RPM_URL:-https://desktop.docker.com/linux/main/amd64/docker-desktop-x86_64.rpm}"
 tmp_parent="${DOCKER_DESKTOP_TMPDIR:-/var/tmp}"
 service="docker-desktop.service"
+docker_repo_file="/etc/yum.repos.d/docker-ce.repo"
+docker_repo_url="https://download.docker.com/linux/fedora/docker-ce.repo"
 
 ensure_command() {
     local command_name="$1"
@@ -31,12 +33,25 @@ download_rpm() {
     curl -fL --output "$rpm_file" "$rpm_url"
 }
 
+ensure_docker_repo() {
+    ensure_command curl
+    ensure_command sudo
+
+    if [[ -f "$docker_repo_file" ]]; then
+        return 0
+    fi
+
+    echo "[INFO] Installing Docker CE rpm repository: $docker_repo_file"
+    curl -fsSL "$docker_repo_url" | sudo tee "$docker_repo_file" >/dev/null
+}
+
 install_desktop() {
     local tmp rpm_file
 
     ensure_command rpm-ostree
     ensure_command sudo
 
+    ensure_docker_repo
     mkdir -p "$tmp_parent"
     tmp="$(mktemp -d "$tmp_parent/docker-desktop.XXXXXX")"
     trap 'rm -rf "$tmp"' RETURN
@@ -88,6 +103,7 @@ case "$script_command" in
             echo "[DRY-RUN] Would layer $app_name with rpm-ostree."
         fi
         echo "[DRY-RUN] Would download: $rpm_url"
+        echo "[DRY-RUN] Would install Docker CE repo: $docker_repo_file"
         echo "[DRY-RUN] Would run: sudo rpm-ostree install --idempotent <downloaded-rpm>"
         echo "[DRY-RUN] Reboot is required after install or update."
         ;;

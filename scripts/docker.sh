@@ -5,12 +5,14 @@ set -euo pipefail
 script_command="${1:-apply}"
 app_name="Docker Engine"
 service="docker.service"
-packages=(moby-engine docker-cli containerd)
+packages=(docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin)
 static_install_dir="/usr/local/bin"
 static_service_file="/etc/systemd/system/$service"
 daemon_config_dir="/etc/docker"
 daemon_config_file="$daemon_config_dir/daemon.json"
 state_dir="/var/lib/docker"
+docker_repo_file="/etc/yum.repos.d/docker-ce.repo"
+docker_repo_url="https://download.docker.com/linux/fedora/docker-ce.repo"
 
 ensure_command() {
     local command_name="$1"
@@ -50,11 +52,24 @@ cleanup_old_static_install() {
     sudo systemctl daemon-reload
 }
 
+ensure_docker_repo() {
+    ensure_command curl
+    ensure_command sudo
+
+    if [[ -f "$docker_repo_file" ]]; then
+        return 0
+    fi
+
+    echo "[INFO] Installing Docker CE rpm repository: $docker_repo_file"
+    curl -fsSL "$docker_repo_url" | sudo tee "$docker_repo_file" >/dev/null
+}
+
 install_docker() {
     ensure_command rpm-ostree
     ensure_command sudo
 
     cleanup_old_static_install
+    ensure_docker_repo
     echo "[INFO] Layering $app_name packages with rpm-ostree: ${packages[*]}"
     sudo rpm-ostree install --idempotent "${packages[@]}"
     echo "[INFO] Reboot required before enabling $service."
@@ -127,6 +142,7 @@ case "$script_command" in
         else
             echo "[DRY-RUN] Would layer $app_name packages with rpm-ostree: ${packages[*]}"
         fi
+        echo "[DRY-RUN] Would install Docker CE repo: $docker_repo_file"
         echo "[DRY-RUN] Would remove old static install if present in: $static_install_dir"
         echo "[DRY-RUN] Would create docker group and add user: $USER"
         echo "[DRY-RUN] Reboot is required after install, update, or removal."
