@@ -23,6 +23,7 @@ dot apply
 - Scarlett stereo PipeWire loopback user service
 - Google Chrome user-level RPM extractor installer
 - Google Cloud CLI user-level installer
+- Git Credential Manager user-level installer
 - GitHub CLI user-level installer
 - GNOME rounded window corners setup
 - Deno user-level installer
