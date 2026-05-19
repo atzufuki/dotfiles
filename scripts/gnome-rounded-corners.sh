@@ -9,7 +9,7 @@ extension_schema_path="/org/gnome/shell/extensions/rounded-window-corners-reborn
 extension_dir="${XDG_DATA_HOME:-$HOME/.local/share}/gnome-shell/extensions/$extension_uuid"
 extensions_api="https://extensions.gnome.org/extension-info/?uuid=rounded-window-corners%40fxgn"
 extension_base_url="https://extensions.gnome.org"
-radius="${GNOME_ROUNDED_CORNERS_RADIUS:-15}"
+radius="${GNOME_ROUNDED_CORNERS_RADIUS:-12}"
 padding="${GNOME_ROUNDED_CORNERS_PADDING:-1}"
 smoothing="${GNOME_ROUNDED_CORNERS_SMOOTHING:-0}"
 border_width="${GNOME_ROUNDED_CORNERS_BORDER_WIDTH:-0}"

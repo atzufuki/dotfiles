@@ -131,12 +131,12 @@ menubar:backdrop {
 }
 
 decoration {
-    border-radius: 8px;
+    border-radius: 12px;
 }
 
 window,
 window.background {
-    border-radius: 0 0 4px 4px;
+    border-radius: 0 0 12px 12px;
 }
 EOF
 }

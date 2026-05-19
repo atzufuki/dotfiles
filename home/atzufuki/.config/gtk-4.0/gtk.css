@@ -1,5 +1,9 @@
-/* Rounded corners for GTK4 windows that honor user CSS. */
+/* Rounded corners for GTK4 CSD windows. */
+decoration {
+    border-radius: 12px;
+}
+
 window,
 window.background {
-    border-radius: 8px;
+    border-radius: 0 0 12px 12px;
 }
