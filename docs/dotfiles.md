@@ -73,3 +73,5 @@ Available scripts are discovered from `scripts/*.sh`, and available modules are 
 ## Modules
 
 External module repositories are defined in `dotfiles.defaults.conf` as `EXTERNAL_MODULE_REPOS` and cloned into `modules/` when setup is run with `--external`.
+
+Active modules can provide `scripts/*.sh`. Module scripts run when the module is listed in `ACTIVE_MODULES`.

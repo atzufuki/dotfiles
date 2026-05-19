@@ -215,8 +215,9 @@ available_scripts() {
 }
 
 script_dependencies() {
-    local script_name="$1"
-    local script="$scripts_dir/$script_name.sh"
+    local scripts_root="$1"
+    local script_name="$2"
+    local script="$scripts_root/$script_name.sh"
     local line
     local deps
     local dep
@@ -255,7 +256,7 @@ order_script_visit() {
             ;;
     esac
 
-    if [[ ! -f "$scripts_dir/$script_name.sh" ]]; then
+    if [[ ! -f "$script_order_root/$script_name.sh" ]]; then
         echo "[ERROR] Script dependency is missing: $script_name"
         exit 1
     fi
@@ -263,7 +264,7 @@ order_script_visit() {
     script_visit_state[$script_name]="visiting"
     while IFS= read -r dep; do
         [[ -n "$dep" ]] || continue
-        if ! [[ -f "$scripts_dir/$dep.sh" ]]; then
+        if ! [[ -f "$script_order_root/$dep.sh" ]]; then
             if [[ "$script_dependency_strict" == "true" ]]; then
                 echo "[ERROR] Script $script_name depends on missing script $dep."
                 exit 1
@@ -280,7 +281,7 @@ order_script_visit() {
         fi
 
         order_script_visit "$dep"
-    done < <(script_dependencies "$script_name")
+    done < <(script_dependencies "$script_order_root" "$script_name")
 
     script_visit_state[$script_name]="visited"
     ordered_scripts+=("$script_name")
@@ -288,17 +289,20 @@ order_script_visit() {
 
 order_scripts() {
     local strict="$1"
+    local scripts_root="$2"
     local script_name
-    shift
+    shift 2
 
     declare -g -a ordered_scripts
     declare -g -a script_order_scope
     declare -g -A script_visit_state
     declare -g script_dependency_strict
+    declare -g script_order_root
 
     ordered_scripts=()
     script_order_scope=("$@")
     script_dependency_strict="$strict"
+    script_order_root="$scripts_root"
     script_visit_state=()
 
     for script_name in "$@"; do
@@ -468,11 +472,13 @@ cleanup_legacy_removed_files() {
     done < <(legacy_removed_files)
 }
 
-run_scripts() {
+run_script_set() {
     local script_command="$1"
+    local scripts_root="$2"
+    local script_label="$3"
+    local activation_mode="$4"
     local script
     local script_name
-    local action
     local -a all_scripts=()
     local -a active_scripts=()
     local -a inactive_scripts=()
@@ -480,15 +486,15 @@ run_scripts() {
     local -a ordered_inactive_scripts=()
     local -a ordered_all_scripts=()
 
-    if [[ ! -d "$scripts_dir" ]]; then
+    if [[ ! -d "$scripts_root" ]]; then
         return 0
     fi
 
     shopt -s nullglob
-    for script in "$scripts_dir"/*.sh; do
+    for script in "$scripts_root"/*.sh; do
         script_name="$(basename "$script" .sh)"
         all_scripts+=("$script_name")
-        if list_contains "$script_name" "${ACTIVE_SCRIPTS[@]}"; then
+        if [[ "$activation_mode" == "all" ]] || list_contains "$script_name" "${ACTIVE_SCRIPTS[@]}"; then
             active_scripts+=("$script_name")
         else
             inactive_scripts+=("$script_name")
@@ -500,45 +506,45 @@ run_scripts() {
         return 0
     fi
 
-    echo "[INFO] Running scripts..."
+    echo "[INFO] Running $script_label scripts..."
     case "$script_command" in
         apply)
-            order_scripts true "${active_scripts[@]}"
+            order_scripts true "$scripts_root" "${active_scripts[@]}"
             ordered_active_scripts=("${ordered_scripts[@]}")
 
             for script_name in "${ordered_active_scripts[@]}"; do
-                script="$scripts_dir/$script_name.sh"
+                script="$scripts_root/$script_name.sh"
                 echo "[INFO] Running script: $script apply"
                 DOTFILES_REPO_DIR="$repo_dir" bash "$script" apply || exit 1
             done
             ;;
         dry-run)
-            order_scripts true "${active_scripts[@]}"
+            order_scripts true "$scripts_root" "${active_scripts[@]}"
             ordered_active_scripts=("${ordered_scripts[@]}")
 
             for script_name in "${ordered_active_scripts[@]}"; do
-                script="$scripts_dir/$script_name.sh"
+                script="$scripts_root/$script_name.sh"
                 echo "[INFO] Running script: $script dry-run"
                 DOTFILES_REPO_DIR="$repo_dir" bash "$script" dry-run || exit 1
             done
             ;;
         purge)
-            order_scripts true "${active_scripts[@]}"
+            order_scripts true "$scripts_root" "${active_scripts[@]}"
             ordered_active_scripts=("${ordered_scripts[@]}")
             mapfile -t ordered_active_scripts < <(reverse_items "${ordered_active_scripts[@]}")
 
             for script_name in "${ordered_active_scripts[@]}"; do
-                script="$scripts_dir/$script_name.sh"
+                script="$scripts_root/$script_name.sh"
                 echo "[INFO] Running script: $script purge"
                 DOTFILES_REPO_DIR="$repo_dir" bash "$script" purge || exit 1
             done
             ;;
         status)
-            order_scripts true "${all_scripts[@]}"
+            order_scripts true "$scripts_root" "${all_scripts[@]}"
             ordered_all_scripts=("${ordered_scripts[@]}")
 
             for script_name in "${ordered_all_scripts[@]}"; do
-                script="$scripts_dir/$script_name.sh"
+                script="$scripts_root/$script_name.sh"
                 echo "[INFO] Running script: $script status"
                 DOTFILES_REPO_DIR="$repo_dir" bash "$script" status || exit 1
             done
@@ -548,6 +554,19 @@ run_scripts() {
             exit 1
             ;;
     esac
+}
+
+run_scripts() {
+    local script_command="$1"
+    local module_name
+    local module_scripts_dir
+
+    run_script_set "$script_command" "$scripts_dir" "dotfiles" configured
+
+    for module_name in "${ACTIVE_MODULES[@]}"; do
+        module_scripts_dir="$repo_dir/modules/$module_name/scripts"
+        run_script_set "$script_command" "$module_scripts_dir" "module $module_name" all
+    done
 }
 
 print_link_status() {

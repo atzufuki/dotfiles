@@ -8,3 +8,5 @@
 *secret*
 *secrets*
 dotfiles.conf
+modules/*
+!modules/.keep
