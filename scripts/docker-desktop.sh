@@ -11,6 +11,10 @@ user_systemd_dir="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
 desktop_dir="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
 service="docker-desktop.service"
 service_file="$user_systemd_dir/$service"
+service_override_dir="$user_systemd_dir/$service.d"
+service_override_file="$service_override_dir/silverblue.conf"
+cli_plugins_dir="/usr/lib/docker/cli-plugins"
+cli_plugins_bind_dir="/var/lib/docker-desktop/cli-plugins"
 desktop_file="$desktop_dir/docker-desktop.desktop"
 uri_desktop_file="$desktop_dir/docker-desktop-uri-handler.desktop"
 
@@ -85,6 +89,22 @@ install_service_file() {
     systemctl --user daemon-reload
 }
 
+ensure_cli_plugins_dir() {
+    if sudo install -d -m 0755 "$cli_plugins_dir" 2>/dev/null; then
+        rm -f "$service_override_file"
+        rmdir "$service_override_dir" 2>/dev/null || true
+        return 0
+    fi
+
+    sudo install -d -m 0755 "$cli_plugins_bind_dir"
+    mkdir -p "$service_override_dir"
+    cat > "$service_override_file" <<EOF
+[Service]
+BindReadOnlyPaths=$cli_plugins_bind_dir:$cli_plugins_dir
+EOF
+    echo "[INFO] Added $service override for Silverblue read-only /usr plugin path."
+}
+
 install_desktop() {
     local tmp rpm_file root_dir source_opt
 
@@ -126,8 +146,10 @@ install_desktop() {
     fi
 
     install_service_file "$root_dir/usr/lib/systemd/user/docker-desktop.service"
+    ensure_cli_plugins_dir
     install_desktop_file "$root_dir/usr/share/applications/docker-desktop.desktop" "$desktop_file"
     install_desktop_file "$root_dir/usr/share/applications/docker-desktop-uri-handler.desktop" "$uri_desktop_file"
+    systemctl --user daemon-reload
 }
 
 purge_desktop() {
@@ -136,8 +158,11 @@ purge_desktop() {
 
     systemctl --user disable --now "$service" >/dev/null 2>&1 || true
     rm -f "$service_file" "$desktop_file" "$uri_desktop_file"
+    rm -f "$service_override_file"
+    rmdir "$service_override_dir" 2>/dev/null || true
     systemctl --user daemon-reload
     sudo rm -rf "$opt_dir"
+    sudo rm -rf "$cli_plugins_bind_dir"
     update-desktop-database "$desktop_dir" >/dev/null 2>&1 || true
     echo "[INFO] Kept Docker Desktop user data under $HOME/.docker/desktop if present."
 }
@@ -145,7 +170,10 @@ purge_desktop() {
 case "$script_command" in
     apply)
         if is_installed; then
-            echo "[INFO] $app_name already installed, skipping. Run: $0 update"
+            echo "[INFO] $app_name already installed, ensuring service prerequisites. Run: $0 update"
+            ensure_command sudo
+            ensure_cli_plugins_dir
+            systemctl --user daemon-reload
             exit 0
         fi
 
