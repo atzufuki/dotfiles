@@ -58,16 +58,29 @@ install_desktop_file() {
     local source_file="$1"
     local target_file="$2"
 
-    mkdir -p "$(dirname "$target_file")"
-    cp "$source_file" "$target_file"
+    install_user_file "$source_file" "$target_file"
     update-desktop-database "$desktop_dir" >/dev/null 2>&1 || true
+}
+
+install_user_file() {
+    local source_file="$1"
+    local target_file="$2"
+    local target_dir
+
+    target_dir="$(dirname "$target_file")"
+
+    if install -D -m 0644 "$source_file" "$target_file" 2>/dev/null; then
+        return 0
+    fi
+
+    sudo install -d -o "$(id -u)" -g "$(id -g)" "$target_dir"
+    sudo install -o "$(id -u)" -g "$(id -g)" -m 0644 "$source_file" "$target_file"
 }
 
 install_service_file() {
     local source_file="$1"
 
-    mkdir -p "$user_systemd_dir"
-    cp "$source_file" "$service_file"
+    install_user_file "$source_file" "$service_file"
     systemctl --user daemon-reload
 }
 
