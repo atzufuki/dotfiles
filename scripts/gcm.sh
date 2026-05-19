@@ -73,7 +73,7 @@ configure_git() {
     ensure_command git
 
     echo "[INFO] Configuring git credential.helper: $launcher"
-    git config --global credential.helper "$launcher"
+    git config --global --replace-all credential.helper "$launcher"
 }
 
 install_gcm() {
