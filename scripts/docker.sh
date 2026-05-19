@@ -94,7 +94,7 @@ Wants=network-online.target
 [Service]
 Type=notify
 EnvironmentFile=-/etc/default/docker
-ExecStart=$dockerd_bin --host=unix:///var/run/docker.sock \$DOCKERD_FLAGS
+ExecStart=$dockerd_bin --host=unix:///var/run/docker.sock --group=docker \$DOCKERD_FLAGS
 ExecReload=/bin/kill -s HUP \$MAINPID
 TimeoutStartSec=0
 Restart=on-failure
