@@ -185,7 +185,7 @@ configure_dotfiles() {
     done
 
     echo "[INFO] Select scripts."
-    for name in $(available_scripts); do
+    for name in $(available_scripts "${next_active_modules[@]}"); do
         if list_contains "$name" "${ACTIVE_SCRIPTS[@]}"; then
             current=true
         else
@@ -206,12 +206,23 @@ configure_dotfiles() {
 
 available_scripts() {
     local script
+    local module_name
+    local module_scripts_dir
 
-    shopt -s nullglob
-    for script in "$scripts_dir"/*.sh; do
-        basename "$script" .sh
-    done
-    shopt -u nullglob
+    {
+        shopt -s nullglob
+        for script in "$scripts_dir"/*.sh; do
+            basename "$script" .sh
+        done
+
+        for module_name in "$@"; do
+            module_scripts_dir="$repo_dir/modules/$module_name/scripts"
+            for script in "$module_scripts_dir"/*.sh; do
+                basename "$script" .sh
+            done
+        done
+        shopt -u nullglob
+    } | sort -u
 }
 
 script_dependencies() {
@@ -315,17 +326,19 @@ available_modules() {
     local entry
     local name
 
-    shopt -s nullglob
-    for module_dir in "$repo_dir"/modules/*; do
-        [[ -d "$module_dir" ]] || continue
-        basename "$module_dir"
-    done
-    shopt -u nullglob
+    {
+        shopt -s nullglob
+        for module_dir in "$repo_dir"/modules/*; do
+            [[ -d "$module_dir" ]] || continue
+            basename "$module_dir"
+        done
+        shopt -u nullglob
 
-    for entry in "${EXTERNAL_MODULE_REPOS[@]}"; do
-        name="${entry%%=*}"
-        [[ -n "$name" ]] && echo "$name"
-    done | sort -u
+        for entry in "${EXTERNAL_MODULE_REPOS[@]}"; do
+            name="${entry%%=*}"
+            [[ -n "$name" ]] && echo "$name"
+        done
+    } | sort -u
 }
 
 managed_files() {
@@ -476,7 +489,6 @@ run_script_set() {
     local script_command="$1"
     local scripts_root="$2"
     local script_label="$3"
-    local activation_mode="$4"
     local script
     local script_name
     local -a all_scripts=()
@@ -494,7 +506,7 @@ run_script_set() {
     for script in "$scripts_root"/*.sh; do
         script_name="$(basename "$script" .sh)"
         all_scripts+=("$script_name")
-        if [[ "$activation_mode" == "all" ]] || list_contains "$script_name" "${ACTIVE_SCRIPTS[@]}"; then
+        if list_contains "$script_name" "${ACTIVE_SCRIPTS[@]}"; then
             active_scripts+=("$script_name")
         else
             inactive_scripts+=("$script_name")
@@ -561,11 +573,11 @@ run_scripts() {
     local module_name
     local module_scripts_dir
 
-    run_script_set "$script_command" "$scripts_dir" "dotfiles" configured
+    run_script_set "$script_command" "$scripts_dir" "dotfiles"
 
     for module_name in "${ACTIVE_MODULES[@]}"; do
         module_scripts_dir="$repo_dir/modules/$module_name/scripts"
-        run_script_set "$script_command" "$module_scripts_dir" "module $module_name" all
+        run_script_set "$script_command" "$module_scripts_dir" "module $module_name"
     done
 }
 
