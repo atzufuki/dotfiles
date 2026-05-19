@@ -53,7 +53,7 @@ install_launchers() {
     local command_name
 
     mkdir -p "$bin_dir"
-    for command_name in gcloud gsutil bq; do
+    for command_name in gcloud gsutil bq docker-credential-gcloud; do
         if [[ -x "$sdk_dir/bin/$command_name" ]]; then
             ln -sfn "$sdk_dir/bin/$command_name" "$bin_dir/$command_name"
         fi
@@ -96,7 +96,7 @@ install_gcloud() {
 purge_gcloud() {
     local command_name
 
-    for command_name in gcloud gsutil bq; do
+    for command_name in gcloud gsutil bq docker-credential-gcloud; do
         if [[ -L "$bin_dir/$command_name" && "$(readlink "$bin_dir/$command_name")" == "$sdk_dir/bin/$command_name" ]]; then
             rm -f "$bin_dir/$command_name"
         fi
@@ -131,7 +131,7 @@ case "$script_command" in
             echo "[DRY-RUN] Would download and extract archive from: $(archive_url)"
             echo "[DRY-RUN] Would install to: $sdk_dir"
         fi
-        echo "[DRY-RUN] Would install launchers: $bin_dir/gcloud, $bin_dir/gsutil, $bin_dir/bq"
+        echo "[DRY-RUN] Would install launchers: $bin_dir/gcloud, $bin_dir/gsutil, $bin_dir/bq, $bin_dir/docker-credential-gcloud"
         ;;
     status)
         if is_installed; then
@@ -139,6 +139,12 @@ case "$script_command" in
             "$sdk_dir/bin/gcloud" version --format='value(Google Cloud SDK)' 2>/dev/null || "$sdk_dir/bin/gcloud" version || true
         else
             echo "[MISSING] $app_name is not installed by this script"
+        fi
+
+        if [[ -x "$bin_dir/docker-credential-gcloud" ]]; then
+            echo "[OK] Docker credential helper installed: $bin_dir/docker-credential-gcloud"
+        else
+            echo "[MISSING] Docker credential helper is not linked: $bin_dir/docker-credential-gcloud"
         fi
         ;;
     *)
