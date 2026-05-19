@@ -30,9 +30,21 @@ missing_commands() {
 }
 
 latest_release_tag() {
-    curl -fsSL https://api.github.com/repos/ggml-org/llama.cpp/releases/latest |
-        sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p' |
-        head -n 1
+    local release_json
+    local tag_regex='"tag_name"[[:space:]]*:[[:space:]]*"([^"]+)"'
+
+    if [[ -n "${LLAMA_CPP_RELEASE_TAG:-}" ]]; then
+        echo "$LLAMA_CPP_RELEASE_TAG"
+        return 0
+    fi
+
+    release_json="$(curl -fsSL https://api.github.com/repos/ggml-org/llama.cpp/releases/latest)"
+    if [[ "$release_json" =~ $tag_regex ]]; then
+        echo "${BASH_REMATCH[1]}"
+        return 0
+    fi
+
+    return 1
 }
 
 asset_platform() {

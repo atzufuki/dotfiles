@@ -1,0 +1,12 @@
+[Unit]
+Description=Scarlett 16i16 stereo microphone PipeWire loopback
+After=pipewire.service pipewire-pulse.service wireplumber.service
+Wants=pipewire.service pipewire-pulse.service wireplumber.service
+
+[Service]
+ExecStart=/usr/bin/pw-loopback --name=ScarlettMic --capture=alsa_input.usb-Focusrite_Scarlett_16i16_4th_Gen_S6KPJZ34B027B9-00.multichannel-input --capture-props="audio.position=[AUX0 AUX1]" --playback-props="media.class=Audio/Source node.name=ScarlettMic audio.position=[FL FR]"
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target

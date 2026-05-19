@@ -22,9 +22,12 @@ dot apply
 
 - Scarlett stereo PipeWire loopback user service
 - GitHub CLI user-level installer
+- GNOME rounded window corners setup
 - Deno user-level installer
 - Rust toolchain user-level installer
 - GitHub SSH key and repository push setup
+- Tailscale system service setup
+- Slack user-level RPM extractor installer
 - llama.cpp local AI runtime setup with AMD-friendly Vulkan backend
 - Zed editor setup with Hyper Term Black theme
 - OpenCode user-level installer
