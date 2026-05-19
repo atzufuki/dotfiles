@@ -61,15 +61,29 @@ installed_by_this_script() {
         grep -Fq "$tailscaled_bin" "$service_file"
 }
 
-patch_service_file() {
-    local source_file="$1"
-    local target_file="$2"
+write_service_file() {
+    local target_file="$1"
 
-    cp "$source_file" "$target_file"
-    sed -i \
-        -e "s|^ExecStart=.*|ExecStart=$tailscaled_bin --state=$state_dir/tailscaled.state --socket=/run/tailscale/tailscaled.sock --port=41641|" \
-        -e "s|^ExecStopPost=.*|ExecStopPost=$tailscaled_bin --cleanup|" \
-        "$target_file"
+    cat > "$target_file" <<EOF
+[Unit]
+Description=Tailscale node agent
+Documentation=https://tailscale.com/kb/
+Wants=network-pre.target
+After=network-pre.target NetworkManager.service systemd-resolved.service
+
+[Service]
+EnvironmentFile=-/etc/default/tailscaled
+ExecStart=$tailscaled_bin --state=$state_dir/tailscaled.state --socket=/run/tailscale/tailscaled.sock --port=41641 \$FLAGS
+ExecStopPost=$tailscaled_bin --cleanup
+Restart=on-failure
+RuntimeDirectory=tailscale
+RuntimeDirectoryMode=0755
+StateDirectory=tailscale
+StateDirectoryMode=0700
+
+[Install]
+WantedBy=multi-user.target
+EOF
 }
 
 install_tailscale() {
@@ -98,34 +112,17 @@ install_tailscale() {
     fi
 
     echo "[INFO] Installing Tailscale binaries to $install_dir."
+    sudo systemctl stop "$service" >/dev/null 2>&1 || true
+    sudo systemctl reset-failed "$service" >/dev/null 2>&1 || true
     sudo install -d -m 0755 "$install_dir"
     sudo install -m 0755 "$extracted_dir/tailscale" "$tailscale_bin"
     sudo install -m 0755 "$extracted_dir/tailscaled" "$tailscaled_bin"
 
-    if [[ -f "$extracted_dir/systemd/tailscaled.service" ]]; then
-        patch_service_file "$extracted_dir/systemd/tailscaled.service" "$tmp/tailscaled.service"
-    else
-        cat > "$tmp/tailscaled.service" <<EOF
-[Unit]
-Description=Tailscale node agent
-Documentation=https://tailscale.com/kb/
-Wants=network-pre.target
-After=network-pre.target NetworkManager.service systemd-resolved.service
-
-[Service]
-ExecStart=$tailscaled_bin --state=$state_dir/tailscaled.state --socket=/run/tailscale/tailscaled.sock --port=41641
-ExecStopPost=$tailscaled_bin --cleanup
-Restart=on-failure
-RuntimeDirectory=tailscale
-RuntimeDirectoryMode=0755
-StateDirectory=tailscale
-StateDirectoryMode=0700
-
-[Install]
-WantedBy=multi-user.target
-EOF
+    if command -v restorecon >/dev/null 2>&1; then
+        sudo restorecon -F "$tailscale_bin" "$tailscaled_bin" >/dev/null 2>&1 || true
     fi
 
+    write_service_file "$tmp/tailscaled.service"
     echo "[INFO] Installing $service."
     sudo install -m 0644 "$tmp/tailscaled.service" "$service_file"
     sudo systemctl daemon-reload
@@ -133,7 +130,12 @@ EOF
 
 enable_service() {
     echo "[INFO] Enabling $service."
-    sudo systemctl enable --now "$service"
+    sudo systemctl enable "$service"
+    sudo systemctl restart "$service" || {
+        echo "[ERROR] Failed to start $service. Recent logs:" >&2
+        sudo journalctl -u "$service" -n 40 --no-pager >&2 || true
+        exit 1
+    }
 }
 
 print_connection_hint() {
