@@ -21,6 +21,7 @@ dot apply
 ## Features
 
 - Scarlett stereo PipeWire loopback user service
+- Google Chrome user-level RPM extractor installer
 - GitHub CLI user-level installer
 - GNOME rounded window corners setup
 - Deno user-level installer
