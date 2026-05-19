@@ -110,6 +110,20 @@ WantedBy=multi-user.target
 EOF
 }
 
+install_service_file() {
+    local tmp_service_file
+
+    ensure_command sudo
+    ensure_command systemctl
+    mkdir -p "$tmp_parent"
+    tmp_service_file="$(mktemp "$tmp_parent/docker-service.XXXXXX")"
+    write_service_file "$tmp_service_file"
+    echo "[INFO] Installing $service."
+    sudo install -m 0644 "$tmp_service_file" "$service_file"
+    rm -f "$tmp_service_file"
+    sudo systemctl daemon-reload
+}
+
 install_docker() {
     local tmp archive extracted_dir url binary
 
@@ -149,16 +163,12 @@ install_docker() {
         sudo restorecon -F "$install_dir"/docker* "$install_dir"/containerd* "$install_dir"/ctr "$install_dir"/runc >/dev/null 2>&1 || true
     fi
 
-    write_service_file "$tmp/docker.service"
-    echo "[INFO] Installing $service."
-    sudo install -m 0644 "$tmp/docker.service" "$service_file"
+    install_service_file
 
     if [[ ! -f "$daemon_config_file" ]]; then
         sudo install -d -m 0755 "$daemon_config_dir"
         printf '%s\n' '{"log-driver":"journald"}' | sudo tee "$daemon_config_file" >/dev/null
     fi
-
-    sudo systemctl daemon-reload
 }
 
 enable_service() {
@@ -210,8 +220,19 @@ purge_docker() {
 case "$script_command" in
     apply)
         if is_installed; then
-            echo "[INFO] Docker static binaries already installed, updating service."
+            echo "[INFO] Docker static binaries already installed, ensuring service. Run: $0 update"
+            install_service_file
+            configure_group
+            enable_service
+            exit 0
         fi
+
+        install_docker
+        configure_group
+        enable_service
+        ;;
+    update)
+        echo "[INFO] Updating Docker static binaries."
         install_docker
         configure_group
         enable_service
@@ -258,7 +279,7 @@ case "$script_command" in
         fi
         ;;
     *)
-        echo "Usage: $0 [apply|purge|dry-run|status]"
+        echo "Usage: $0 [apply|update|purge|dry-run|status]"
         exit 1
         ;;
 esac

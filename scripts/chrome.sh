@@ -13,6 +13,7 @@ desktop_dir="$data_dir/applications"
 icon_base_dir="$data_dir/icons/hicolor"
 desktop_file="$desktop_dir/google-chrome.desktop"
 bin_file="$bin_dir/google-chrome"
+tmp_parent="${CHROME_TMPDIR:-/var/tmp}"
 
 ensure_command() {
     local command_name="$1"
@@ -113,7 +114,8 @@ install_chrome() {
     ensure_command curl
     ensure_extractor
 
-    tmp="$(mktemp -d)"
+    mkdir -p "$tmp_parent"
+    tmp="$(mktemp -d "$tmp_parent/chrome.XXXXXX")"
     trap 'rm -rf "$tmp"' RETURN
     rpm_file="$tmp/google-chrome.rpm"
 
@@ -151,13 +153,17 @@ purge_chrome() {
 case "$script_command" in
     apply)
         if is_installed; then
-            echo "[INFO] $app_name already installed at $app_dir, updating launcher and desktop entry."
+            echo "[INFO] $app_name already installed at $app_dir, refreshing launcher and desktop entry. Run: $0 update"
             install_launcher
             install_icons
             install_desktop_entry
             exit 0
         fi
 
+        install_chrome
+        ;;
+    update)
+        echo "[INFO] Updating $app_name."
         install_chrome
         ;;
     purge)
@@ -182,7 +188,7 @@ case "$script_command" in
         fi
         ;;
     *)
-        echo "Usage: $0 [apply|purge|dry-run|status]"
+        echo "Usage: $0 [apply|update|purge|dry-run|status]"
         exit 1
         ;;
 esac

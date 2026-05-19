@@ -9,6 +9,7 @@ tailscale_bin="$install_dir/tailscale"
 tailscaled_bin="$install_dir/tailscaled"
 service_file="/etc/systemd/system/$service"
 state_dir="/var/lib/tailscale"
+tmp_parent="${TAILSCALE_TMPDIR:-/var/tmp}"
 
 ensure_command() {
     local command_name="$1"
@@ -86,6 +87,20 @@ WantedBy=multi-user.target
 EOF
 }
 
+install_service_file() {
+    local tmp_service_file
+
+    ensure_command sudo
+    ensure_command systemctl
+    mkdir -p "$tmp_parent"
+    tmp_service_file="$(mktemp "$tmp_parent/tailscaled-service.XXXXXX")"
+    write_service_file "$tmp_service_file"
+    echo "[INFO] Installing $service."
+    sudo install -m 0644 "$tmp_service_file" "$service_file"
+    rm -f "$tmp_service_file"
+    sudo systemctl daemon-reload
+}
+
 install_tailscale() {
     local tmp archive extracted_dir url
 
@@ -95,7 +110,8 @@ install_tailscale() {
     ensure_command systemctl
 
     url="$(archive_url)"
-    tmp="$(mktemp -d)"
+    mkdir -p "$tmp_parent"
+    tmp="$(mktemp -d "$tmp_parent/tailscale.XXXXXX")"
     trap 'rm -rf "$tmp"' RETURN
     archive="$tmp/tailscale.tgz"
 
@@ -122,10 +138,7 @@ install_tailscale() {
         sudo restorecon -F "$tailscale_bin" "$tailscaled_bin" >/dev/null 2>&1 || true
     fi
 
-    write_service_file "$tmp/tailscaled.service"
-    echo "[INFO] Installing $service."
-    sudo install -m 0644 "$tmp/tailscaled.service" "$service_file"
-    sudo systemctl daemon-reload
+    install_service_file
 }
 
 enable_service() {
@@ -167,8 +180,19 @@ purge_tailscale() {
 case "$script_command" in
     apply)
         if is_installed; then
-            echo "[INFO] Tailscale static binaries already installed, updating service."
+            echo "[INFO] Tailscale static binaries already installed, ensuring service. Run: $0 update"
+            install_service_file
+            enable_service
+            print_connection_hint
+            exit 0
         fi
+
+        install_tailscale
+        enable_service
+        print_connection_hint
+        ;;
+    update)
+        echo "[INFO] Updating Tailscale static binaries."
         install_tailscale
         enable_service
         print_connection_hint
@@ -214,7 +238,7 @@ case "$script_command" in
         fi
         ;;
     *)
-        echo "Usage: $0 [apply|purge|dry-run|status]"
+        echo "Usage: $0 [apply|update|purge|dry-run|status]"
         exit 1
         ;;
 esac

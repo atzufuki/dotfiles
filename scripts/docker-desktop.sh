@@ -145,8 +145,15 @@ purge_desktop() {
 case "$script_command" in
     apply)
         if is_installed; then
-            echo "[INFO] $app_name already installed, updating files."
+            echo "[INFO] $app_name already installed, skipping. Run: $0 update"
+            exit 0
         fi
+
+        install_desktop
+        echo "[INFO] Start Docker Desktop from the app launcher or run: systemctl --user start $service"
+        ;;
+    update)
+        echo "[INFO] Updating $app_name."
         install_desktop
         echo "[INFO] Start Docker Desktop from the app launcher or run: systemctl --user start $service"
         ;;
@@ -185,7 +192,7 @@ case "$script_command" in
         fi
         ;;
     *)
-        echo "Usage: $0 [apply|purge|dry-run|status]"
+        echo "Usage: $0 [apply|update|purge|dry-run|status]"
         exit 1
         ;;
 esac

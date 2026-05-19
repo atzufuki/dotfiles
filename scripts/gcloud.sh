@@ -7,6 +7,7 @@ app_name="Google Cloud CLI"
 bin_dir="${XDG_BIN_HOME:-$HOME/.local/bin}"
 app_dir="${XDG_OPT_HOME:-$HOME/.local/opt}/google-cloud-cli"
 sdk_dir="$app_dir/google-cloud-sdk"
+tmp_parent="${GCLOUD_TMPDIR:-/var/tmp}"
 
 ensure_command() {
     local command_name="$1"
@@ -66,7 +67,8 @@ install_gcloud() {
     ensure_command tar
 
     url="$(archive_url)"
-    tmp="$(mktemp -d)"
+    mkdir -p "$tmp_parent"
+    tmp="$(mktemp -d "$tmp_parent/gcloud.XXXXXX")"
     trap 'rm -rf "$tmp"' RETURN
     archive="$tmp/google-cloud-cli.tar.gz"
 
@@ -107,11 +109,15 @@ purge_gcloud() {
 case "$script_command" in
     apply)
         if is_installed; then
-            echo "[INFO] $app_name already installed at $sdk_dir, updating launchers."
+            echo "[INFO] $app_name already installed at $sdk_dir, refreshing launchers. Run: $0 update"
             install_launchers
             exit 0
         fi
 
+        install_gcloud
+        ;;
+    update)
+        echo "[INFO] Updating $app_name."
         install_gcloud
         ;;
     purge)
@@ -136,7 +142,7 @@ case "$script_command" in
         fi
         ;;
     *)
-        echo "Usage: $0 [apply|purge|dry-run|status]"
+        echo "Usage: $0 [apply|update|purge|dry-run|status]"
         exit 1
         ;;
 esac
