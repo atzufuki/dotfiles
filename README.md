@@ -27,6 +27,7 @@ dot apply
 - GNOME rounded window corners setup
 - Deno user-level installer
 - Docker Engine static binary installer
+- Docker Desktop RPM extractor installer
 - Podman-based Docker compatibility setup
 - Rust toolchain user-level installer
 - GitHub SSH key and repository push setup
