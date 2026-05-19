@@ -136,7 +136,7 @@ decoration {
 
 window,
 window.background {
-    border-radius: 0 0 12px 12px;
+    border-radius: 12px;
 }
 EOF
 }
