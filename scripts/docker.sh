@@ -13,6 +13,7 @@ state_dir="/var/lib/docker"
 docker_bin="$install_dir/docker"
 dockerd_bin="$install_dir/dockerd"
 download_base="https://download.docker.com/linux/static/stable"
+tmp_parent="${DOCKER_TMPDIR:-/var/tmp}"
 
 ensure_command() {
     local command_name="$1"
@@ -118,7 +119,8 @@ install_docker() {
     ensure_command systemctl
 
     url="$(archive_url)"
-    tmp="$(mktemp -d)"
+    mkdir -p "$tmp_parent"
+    tmp="$(mktemp -d "$tmp_parent/docker.XXXXXX")"
     trap 'rm -rf "$tmp"' RETURN
     archive="$tmp/docker.tgz"
 
