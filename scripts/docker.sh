@@ -5,15 +5,12 @@ set -euo pipefail
 script_command="${1:-apply}"
 app_name="Docker Engine"
 service="docker.service"
-install_dir="/usr/local/bin"
-service_file="/etc/systemd/system/$service"
+packages=(moby-engine docker-cli containerd)
+static_install_dir="/usr/local/bin"
+static_service_file="/etc/systemd/system/$service"
 daemon_config_dir="/etc/docker"
 daemon_config_file="$daemon_config_dir/daemon.json"
 state_dir="/var/lib/docker"
-docker_bin="$install_dir/docker"
-dockerd_bin="$install_dir/dockerd"
-download_base="https://download.docker.com/linux/static/stable"
-tmp_parent="${DOCKER_TMPDIR:-/var/tmp}"
 
 ensure_command() {
     local command_name="$1"
@@ -24,164 +21,56 @@ ensure_command() {
     fi
 }
 
-docker_arch() {
-    case "$(uname -m)" in
-        x86_64)
-            echo "x86_64"
-            ;;
-        aarch64|arm64)
-            echo "aarch64"
-            ;;
-        *)
-            echo "[ERROR] Unsupported architecture for Docker static binary: $(uname -m)" >&2
-            exit 1
-            ;;
-    esac
-}
-
-latest_version() {
-    local arch index version
-
-    if [[ -n "${DOCKER_VERSION:-}" ]]; then
-        echo "$DOCKER_VERSION"
-        return 0
-    fi
-
-    arch="$(docker_arch)"
-    index="$(curl -fsSL "$download_base/$arch/")"
-    version="$(printf '%s\n' "$index" | sed -n 's/.*docker-\([0-9][0-9.]*\)\.tgz.*/\1/p' | sort -V | tail -n 1)"
-
-    if [[ -z "$version" ]]; then
-        echo "[ERROR] Could not resolve latest Docker static version." >&2
-        echo "[ERROR] Set DOCKER_VERSION or DOCKER_ARCHIVE_URL and retry." >&2
-        exit 1
-    fi
-
-    echo "$version"
-}
-
-archive_url() {
-    local arch version
-
-    if [[ -n "${DOCKER_ARCHIVE_URL:-}" ]]; then
-        echo "$DOCKER_ARCHIVE_URL"
-        return 0
-    fi
-
-    arch="$(docker_arch)"
-    version="$(latest_version)"
-    echo "$download_base/$arch/docker-${version}.tgz"
-}
-
 is_installed() {
-    [[ -x "$docker_bin" && -x "$dockerd_bin" ]]
+    rpm -q "${packages[@]}" >/dev/null 2>&1
 }
 
-installed_by_this_script() {
-    [[ -x "$docker_bin" && -x "$dockerd_bin" && -f "$service_file" ]] &&
-        grep -Fq "$dockerd_bin" "$service_file"
+installed_by_old_static_script() {
+    [[ -x "$static_install_dir/docker" && -x "$static_install_dir/dockerd" && -f "$static_service_file" ]] &&
+        grep -Fq "$static_install_dir/dockerd" "$static_service_file"
 }
 
-write_service_file() {
-    local target_file="$1"
-
-    cat > "$target_file" <<EOF
-[Unit]
-Description=Docker Application Container Engine
-Documentation=https://docs.docker.com
-After=network-online.target firewalld.service containerd.service
-Wants=network-online.target
-
-[Service]
-Type=notify
-EnvironmentFile=-/etc/default/docker
-ExecStart=$dockerd_bin --host=unix:///var/run/docker.sock --group=docker \$DOCKERD_FLAGS
-ExecReload=/bin/kill -s HUP \$MAINPID
-TimeoutStartSec=0
-Restart=on-failure
-StartLimitBurst=3
-StartLimitIntervalSec=60
-Delegate=yes
-KillMode=process
-OOMScoreAdjust=-500
-
-[Install]
-WantedBy=multi-user.target
-EOF
-}
-
-install_service_file() {
-    local tmp_service_file
+cleanup_old_static_install() {
+    local binary
 
     ensure_command sudo
     ensure_command systemctl
-    mkdir -p "$tmp_parent"
-    tmp_service_file="$(mktemp "$tmp_parent/docker-service.XXXXXX")"
-    write_service_file "$tmp_service_file"
-    echo "[INFO] Installing $service."
-    sudo install -m 0644 "$tmp_service_file" "$service_file"
-    rm -f "$tmp_service_file"
+
+    if ! installed_by_old_static_script; then
+        return 0
+    fi
+
+    echo "[INFO] Removing old static Docker installation from $static_install_dir."
+    sudo systemctl disable --now "$service" >/dev/null 2>&1 || true
+    sudo rm -f "$static_service_file"
+    for binary in docker dockerd containerd containerd-shim containerd-shim-runc-v2 ctr docker-init docker-proxy runc; do
+        sudo rm -f "$static_install_dir/$binary"
+    done
+    sudo rm -f /var/run/docker.pid /run/docker.pid
     sudo systemctl daemon-reload
 }
 
 install_docker() {
-    local tmp archive extracted_dir url binary
-
-    ensure_command curl
-    ensure_command tar
+    ensure_command rpm-ostree
     ensure_command sudo
-    ensure_command systemctl
 
-    url="$(archive_url)"
-    mkdir -p "$tmp_parent"
-    tmp="$(mktemp -d "$tmp_parent/docker.XXXXXX")"
-    trap 'rm -rf "$tmp"' RETURN
-    archive="$tmp/docker.tgz"
-
-    echo "[INFO] Downloading Docker static archive: $url"
-    curl -fL --output "$archive" "$url"
-
-    echo "[INFO] Extracting Docker static archive."
-    tar -xzf "$archive" -C "$tmp"
-    extracted_dir="$tmp/docker"
-
-    if [[ ! -x "$extracted_dir/docker" || ! -x "$extracted_dir/dockerd" ]]; then
-        echo "[ERROR] Static archive did not contain docker and dockerd binaries."
-        exit 1
-    fi
-
-    echo "[INFO] Installing Docker binaries to $install_dir."
-    sudo systemctl stop "$service" >/dev/null 2>&1 || true
-    sudo systemctl reset-failed "$service" >/dev/null 2>&1 || true
-    sudo install -d -m 0755 "$install_dir"
-    for binary in "$extracted_dir"/*; do
-        [[ -f "$binary" && -x "$binary" ]] || continue
-        sudo install -m 0755 "$binary" "$install_dir/$(basename "$binary")"
-    done
-
-    if command -v restorecon >/dev/null 2>&1; then
-        sudo restorecon -F "$install_dir"/docker* "$install_dir"/containerd* "$install_dir"/ctr "$install_dir"/runc >/dev/null 2>&1 || true
-    fi
-
-    install_service_file
-
-    if [[ ! -f "$daemon_config_file" ]]; then
-        sudo install -d -m 0755 "$daemon_config_dir"
-        printf '%s\n' '{"log-driver":"journald"}' | sudo tee "$daemon_config_file" >/dev/null
-    fi
+    cleanup_old_static_install
+    echo "[INFO] Layering $app_name packages with rpm-ostree: ${packages[*]}"
+    sudo rpm-ostree install --idempotent "${packages[@]}"
+    echo "[INFO] Reboot required before enabling $service."
 }
 
 enable_service() {
+    ensure_command sudo
+    ensure_command systemctl
+
     echo "[INFO] Enabling $service."
-    sudo systemctl enable "$service"
-    sudo systemctl restart "$service" || {
-        echo "[ERROR] Failed to start $service. Recent logs:" >&2
-        sudo journalctl -u "$service" -n 60 --no-pager >&2 || true
-        exit 1
-    }
+    sudo systemctl enable --now "$service"
 }
 
 configure_group() {
+    ensure_command sudo
+
     if ! getent group docker >/dev/null 2>&1; then
         echo "[INFO] Creating docker group."
         sudo groupadd docker
@@ -194,34 +83,28 @@ configure_group() {
 }
 
 purge_docker() {
-    local binary
-
+    ensure_command rpm-ostree
     ensure_command sudo
     ensure_command systemctl
 
-    if systemctl list-unit-files "$service" >/dev/null 2>&1; then
-        echo "[INFO] Disabling $service."
-        sudo systemctl disable --now "$service" || true
-    fi
-
-    if installed_by_this_script; then
-        sudo rm -f "$service_file"
-        for binary in docker dockerd containerd containerd-shim containerd-shim-runc-v2 ctr docker-init docker-proxy runc; do
-            sudo rm -f "$install_dir/$binary"
-        done
-        sudo systemctl daemon-reload
-        echo "[INFO] Kept Docker state under $state_dir."
-        echo "[INFO] Kept Docker daemon config at $daemon_config_file."
+    sudo systemctl disable --now "$service" >/dev/null 2>&1 || true
+    cleanup_old_static_install
+    if is_installed; then
+        echo "[INFO] Removing $app_name rpm-ostree packages: ${packages[*]}"
+        sudo rpm-ostree uninstall "${packages[@]}"
+        echo "[INFO] Reboot required to complete removal."
     else
-        echo "[INFO] Docker static installation was not found, skipping file removal."
+        echo "[INFO] $app_name packages are not layered, skipping removal."
     fi
+    echo "[INFO] Kept Docker state under $state_dir."
+    echo "[INFO] Kept Docker daemon config at $daemon_config_file."
 }
 
 case "$script_command" in
     apply)
         if is_installed; then
-            echo "[INFO] Docker static binaries already installed, ensuring service. Run: $0 update"
-            install_service_file
+            echo "[INFO] $app_name packages already installed, ensuring group and service. Run: $0 update"
+            cleanup_old_static_install
             configure_group
             enable_service
             exit 0
@@ -229,35 +112,35 @@ case "$script_command" in
 
         install_docker
         configure_group
-        enable_service
         ;;
     update)
-        echo "[INFO] Updating Docker static binaries."
+        echo "[INFO] Updating $app_name packages."
         install_docker
         configure_group
-        enable_service
         ;;
     purge)
         purge_docker
         ;;
     dry-run)
         if is_installed; then
-            echo "[DRY-RUN] Docker static binaries are already installed."
+            echo "[DRY-RUN] $app_name rpm-ostree packages are already installed."
         else
-            echo "[DRY-RUN] Would install Docker static binaries."
+            echo "[DRY-RUN] Would layer $app_name packages with rpm-ostree: ${packages[*]}"
         fi
-        echo "[DRY-RUN] Would download: $(archive_url)"
-        echo "[DRY-RUN] Would install binaries to: $install_dir"
-        echo "[DRY-RUN] Would install and enable: $service_file"
+        echo "[DRY-RUN] Would remove old static install if present in: $static_install_dir"
         echo "[DRY-RUN] Would create docker group and add user: $USER"
+        echo "[DRY-RUN] Reboot is required after install, update, or removal."
         ;;
     status)
         if is_installed; then
-            echo "[OK] Docker installed: $docker_bin"
-            "$docker_bin" --version || true
-            "$dockerd_bin" --version || true
+            echo "[OK] $app_name rpm-ostree packages installed"
+            rpm -q "${packages[@]}" || true
         else
-            echo "[MISSING] Docker static binaries are not installed"
+            echo "[MISSING] $app_name rpm-ostree packages are not all installed"
+        fi
+
+        if installed_by_old_static_script; then
+            echo "[WARN] Old static Docker installation is still present at $static_install_dir"
         fi
 
         if systemctl is-enabled "$service" >/dev/null 2>&1; then
@@ -272,9 +155,9 @@ case "$script_command" in
             echo "[MISSING] $service is not active"
         fi
 
-        if is_installed && "$docker_bin" info >/dev/null 2>&1; then
+        if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
             echo "[OK] Docker daemon reachable"
-        elif is_installed; then
+        elif command -v docker >/dev/null 2>&1; then
             echo "[MISSING] Docker daemon is not reachable by current user"
         fi
         ;;
