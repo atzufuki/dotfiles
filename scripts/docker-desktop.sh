@@ -6,6 +6,7 @@ script_command="${1:-apply}"
 app_name="Docker Desktop"
 rpm_url="${DOCKER_DESKTOP_RPM_URL:-https://desktop.docker.com/linux/main/amd64/docker-desktop-x86_64.rpm}"
 opt_dir="/opt/docker-desktop"
+tmp_parent="${DOCKER_DESKTOP_TMPDIR:-/var/tmp}"
 user_systemd_dir="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
 desktop_dir="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
 service="docker-desktop.service"
@@ -92,7 +93,8 @@ install_desktop() {
     ensure_command systemctl
     ensure_extractor
 
-    tmp="$(mktemp -d)"
+    mkdir -p "$tmp_parent"
+    tmp="$(mktemp -d "$tmp_parent/docker-desktop.XXXXXX")"
     trap 'rm -rf "$tmp"' RETURN
     rpm_file="$tmp/docker-desktop.rpm"
     root_dir="$tmp/root"
