@@ -26,6 +26,8 @@ dot apply
 - GitHub CLI user-level installer
 - GNOME rounded window corners setup
 - Deno user-level installer
+- Docker Engine static binary installer
+- Podman-based Docker compatibility setup
 - Rust toolchain user-level installer
 - GitHub SSH key and repository push setup
 - Tailscale system service setup
