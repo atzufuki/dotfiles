@@ -5,3 +5,5 @@ if [ -f /usr/etc/skel/.bash_profile ]; then
 elif [ -f /etc/skel/.bash_profile ]; then
     . /etc/skel/.bash_profile
 fi
+
+export PATH="/home/atzufuki/.local/bin:$PATH"

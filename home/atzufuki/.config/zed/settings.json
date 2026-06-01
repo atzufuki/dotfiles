@@ -1,6 +1,10 @@
 {
+  "cli_default_open_behavior": "existing_window",
   "theme": "Hyper Term Black",
   "project_panel": {
+    "dock": "left"
+  },
+  "git_panel": {
     "dock": "left"
   },
   "terminal": {
