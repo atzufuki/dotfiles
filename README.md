@@ -21,6 +21,7 @@ dot apply
 ## Features
 
 - Scarlett stereo PipeWire loopback user service
+- Antigravity 2 user-level desktop installer
 - Antigravity CLI user-level installer
 - Google Chrome user-level RPM extractor installer
 - Google Cloud CLI user-level installer
