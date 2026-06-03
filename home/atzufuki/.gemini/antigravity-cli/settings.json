@@ -1,0 +1,16 @@
+{
+  "allowNonWorkspaceAccess": false,
+  "enableTelemetry": false,
+  "permissions": {
+    "allow": [
+      "read_file(/var/home/atzufuki/.gemini/antigravity)",
+      "write_file(/var/home/atzufuki/.gemini/antigravity)"
+    ],
+    "deny": ["command(*)"]
+  },
+  "trustedWorkspaces": [
+    "/var/home/atzufuki/Code/kelo",
+    "/var/home/atzufuki/.dotfiles",
+    "/var/home/atzufuki/.gemini/antigravity"
+  ]
+}
