@@ -1,10 +1,16 @@
 {
-  "allowNonWorkspaceAccess": false,
+  "allowNonWorkspaceAccess": true,
   "enableTelemetry": false,
   "permissions": {
     "allow": [
       "read_file(/var/home/atzufuki/.gemini/antigravity)",
-      "write_file(/var/home/atzufuki/.gemini/antigravity)"
+      "write_file(/var/home/atzufuki/.gemini/antigravity)",
+      "read_file(/var/home/atzufuki/.gemini/antigravity/)",
+      "write_file(/var/home/atzufuki/.gemini/antigravity/)",
+      "read_file(/home/atzufuki/.gemini/antigravity)",
+      "write_file(/home/atzufuki/.gemini/antigravity)",
+      "read_file(/home/atzufuki/.gemini/antigravity/)",
+      "write_file(/home/atzufuki/.gemini/antigravity/)"
     ],
     "deny": ["command(*)"]
   },
