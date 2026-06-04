@@ -10,3 +10,4 @@
 dotfiles.conf
 modules/*
 !modules/.keep
+home/atzufuki/.gemini/config/

@@ -58,19 +58,47 @@
         "available_models": [
           {
             "name": "Gemini 3.5 Flash (Medium)",
-            "max_tokens": 1000000
+            "max_tokens": 1000000,
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": false,
+              "prompt_cache_key": false,
+              "interleaved_reasoning": true
+            }
           },
           {
             "name": "Claude Sonnet 4.6 (Thinking)",
-            "max_tokens": 200000
+            "max_tokens": 200000,
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": false,
+              "prompt_cache_key": false,
+              "interleaved_reasoning": true
+            }
           },
           {
             "name": "Gemini 3.1 Pro (High)",
-            "max_tokens": 2000000
+            "max_tokens": 2000000,
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": false,
+              "prompt_cache_key": false,
+              "interleaved_reasoning": true
+            }
           },
           {
             "name": "GPT-OSS 120B (Medium)",
-            "max_tokens": 100000
+            "max_tokens": 100000,
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": false,
+              "prompt_cache_key": false,
+              "interleaved_reasoning": true
+            }
           }
         ]
       }
