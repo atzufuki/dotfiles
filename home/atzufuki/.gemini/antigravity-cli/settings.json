@@ -3,16 +3,11 @@
   "enableTelemetry": false,
   "permissions": {
     "allow": [
+      "command(git)",
+      "unsandboxed(git)",
       "read_file(/var/home/atzufuki/.gemini/antigravity)",
-      "write_file(/var/home/atzufuki/.gemini/antigravity)",
-      "read_file(/var/home/atzufuki/.gemini/antigravity/)",
-      "write_file(/var/home/atzufuki/.gemini/antigravity/)",
-      "read_file(/home/atzufuki/.gemini/antigravity)",
-      "write_file(/home/atzufuki/.gemini/antigravity)",
-      "read_file(/home/atzufuki/.gemini/antigravity/)",
-      "write_file(/home/atzufuki/.gemini/antigravity/)"
-    ],
-    "deny": ["command(*)"]
+      "write_file(/var/home/atzufuki/.gemini/antigravity)"
+    ]
   },
   "trustedWorkspaces": [
     "/var/home/atzufuki/Code/kelo",

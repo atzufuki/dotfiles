@@ -1,0 +1,12 @@
+[Unit]
+Description=Antigravity Zed AI Bridge Proxy Server
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/env bash -lc 'exec deno run -A "/home/atzufuki/.dotfiles/home/atzufuki/.config/zed/agy_zed_bridge.ts"'
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

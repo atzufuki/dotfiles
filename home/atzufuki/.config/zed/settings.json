@@ -52,10 +52,36 @@
             }
           }
         ]
+      },
+      "Antigravity": {
+        "api_url": "http://localhost:9988/v1",
+        "available_models": [
+          {
+            "name": "Gemini 3.5 Flash (Medium)",
+            "max_tokens": 1000000
+          },
+          {
+            "name": "Claude Sonnet 4.6 (Thinking)",
+            "max_tokens": 200000
+          },
+          {
+            "name": "Gemini 3.1 Pro (High)",
+            "max_tokens": 2000000
+          },
+          {
+            "name": "GPT-OSS 120B (Medium)",
+            "max_tokens": 100000
+          }
+        ]
       }
     }
   },
   "agent": {
+    "default_model": {
+      "provider": "Antigravity",
+      "model": "Gemini 3.5 Flash (Medium)",
+      "enable_thinking": false
+    },
     "sidebar_side": "right",
     "dock": "right"
   }
